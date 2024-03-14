@@ -170,6 +170,14 @@ export const updateProduct = async (req, res, next) => {
     if (req.body.expiredDate) {
         product.expiredDate = req.body.expiredDate;
     }
+    if (req.body.status) {
+        const checkCategory=await CategoryModel.findById(product.categoryId);
+        const checkSubCategory=await CategoryModel.findById(product.subCategoryId);
+        if ( req.body.status=="Active" && (checkCategory.isDeleted || checkCategory.status=="Inactive" || checkSubCategory.isDeleted || checkSubCategory.status=="Inactive")) {
+            return next(new Error("can not active this product category or sub category not available", { cause: 400 }));
+        } 
+        product.status = req.body.status;
+    }
 
     if (req.file) {
         if (req.files.mainImage[0]) {
@@ -283,11 +291,21 @@ export const getSpecificProduct = async (req, res, next) => {
 }
 
 export const restoreProduct = async (req, res, next) => {
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive' }, { new: true });
+    const checkProduct = await ProductModel.findById(req.params.productId);
+    if (!checkProduct) {
+        return next(new Error("product not found", { cause: 404 }));
+    }
+    const checkCategory=await CategoryModel.findById(checkProduct.categoryId);
+    const checkSubCategory=await SubCategoryModel.findById(checkProduct.subCategoryId);
+    if ( checkCategory.isDeleted || checkCategory.status=="Inactive" || checkSubCategory.isDeleted || checkSubCategory.status=="Inactive") {
+        return next(new Error("can not restore this product category or sub category not available", { cause: 400 }));
+    }
+
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive',updatedBy:req.user._id }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 export const softDeleteProduct = async (req, res, next) => {
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive' }, { new: true });
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive',updatedBy:req.user._id }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 

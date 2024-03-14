@@ -89,23 +89,36 @@ export const updateSubCategory = async (req, res, next) => {
     }
 
     if (req.body.status) {
+        const checkCategory = await CategoryModel.findById(subCategory.categoryId);
+        if (req.body.status == "Active" && (checkCategory.isDeleted || checkCategory.status == "Inactive" || checkSubCategory.isDeleted || checkSubCategory.status == "Inactive")) {
+            return next(new Error("can not active this sub category, category not available", { cause: 400 }));
+        }
         subCategory.status = req.body.status;
-         await ProductModel.updateMany({ subCategoryId }, { status: req.body.status }); 
+
+        await ProductModel.updateMany({ subCategoryId }, { status: req.body.status, updatedBy: req.user._id });
     }
 
     subCategory.updatedBy = req.user._id;
     await subCategory.save()
 
-    return res.status(201).json({ message: 'success', subCategory }); 
+    return res.status(201).json({ message: 'success', subCategory });
 }
 
 export const restoreSubCategory = async (req, res, next) => {
     const subCategoryId = req.params.subCategoryId;
-    const SubCategory = await SubCategoryModel.findByIdAndUpdate(subCategoryId, { isDeleted: false, status: 'Active' }, { new: true });
-    if (!SubCategory) {
+
+    const checkSubCategory = await SubCategoryModel.findById(subCategoryId);   
+     if (!checkSubCategory) {
         return next(new Error(` invalid id ${subCategoryId} `, { cause: 400 }));
     }
-    const restoreProducts = await ProductModel.updateMany({ subCategoryId }, { isDeleted: false, status: 'Active' }, { new: true });
+
+    const checkCategory = await CategoryModel.findById(checkSubCategory.categoryId);
+    if ( checkCategory.isDeleted || checkCategory.status == "Inactive" )  {
+        return next(new Error("can not restore this sub category, category not available", { cause: 400 }));
+    }
+
+    const SubCategory = await SubCategoryModel.findByIdAndUpdate(subCategoryId, { isDeleted: false, status: 'Active', updatedBy: req.user._id }, { new: true });
+    const restoreProducts = await ProductModel.updateMany({ subCategoryId }, { isDeleted: false, status: 'Active', updatedBy: req.user._id }, { new: true });
 
     return res.status(200).json({ message: 'success', SubCategory, restoreProducts });
 
@@ -113,11 +126,11 @@ export const restoreSubCategory = async (req, res, next) => {
 
 export const softDeleteSubCategory = async (req, res, next) => {
     const subCategoryId = req.params.subCategoryId;
-    const SubCategory = await SubCategoryModel.findByIdAndUpdate(subCategoryId, { isDeleted: true, status: 'Inactive' }, { new: true });
+    const SubCategory = await SubCategoryModel.findByIdAndUpdate(subCategoryId, { isDeleted: true, status: 'Inactive', updatedBy: req.user._id }, { new: true });
     if (!SubCategory) {
         return next(new Error(` invalid id ${subCategoryId} `, { cause: 400 }));
     }
-    const softDeleteProducts = await ProductModel.updateMany({ subCategoryId }, { isDeleted: true, status: 'Inactive' }, { new: true });
+    const softDeleteProducts = await ProductModel.updateMany({ subCategoryId }, { isDeleted: true, status: 'Inactive', updatedBy: req.user._id }, { new: true });
 
     return res.status(200).json({ message: 'success', SubCategory, softDeleteProducts });
 

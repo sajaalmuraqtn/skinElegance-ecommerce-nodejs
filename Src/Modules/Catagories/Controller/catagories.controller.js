@@ -70,8 +70,8 @@ export const updateCategory = async (req, res, next) => {
     }
     if (req.body.status) {
         category.status = req.body.status;
-         await SubCategoryModel.updateMany({categoryId},{ status:req.body.status} ); 
-         await ProductModel.updateMany({categoryId},{ status:req.body.status} );
+         await SubCategoryModel.updateMany({categoryId},{ status:req.body.status,updatedBy:req.user._id} ); 
+         await ProductModel.updateMany({categoryId},{ status:req.body.status,updatedBy:req.user._id} );
         
     }
     category.updatedBy = req.user._id;
@@ -83,24 +83,24 @@ export const updateCategory = async (req, res, next) => {
 
 export const restoreCategory = async (req, res, next) => {
     const categoryId  = req.params.categoryId;
-    const category = await CategoryModel.findByIdAndUpdate(categoryId,{isDeleted:false,status:'Active'},{new:true});
+    const category = await CategoryModel.findByIdAndUpdate(categoryId,{isDeleted:false,status:'Active',updatedBy:req.user._id},{new:true});
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }
-    const  restoreSubCategory=await SubCategoryModel.updateMany({categoryId},{isDeleted:false,status:'Active'} ); 
-    const restoreProducts= await ProductModel.updateMany({categoryId},{isDeleted:false,status:'Active'} );
+    const  restoreSubCategory=await SubCategoryModel.updateMany({categoryId},{isDeleted:false,status:'Active',updatedBy:req.user._id} ); 
+    const restoreProducts= await ProductModel.updateMany({categoryId},{isDeleted:false,status:'Active',updatedBy:req.user._id} );
     
     return res.status(200).json({ message: 'success', category,restoreSubCategory,restoreProducts }); 
 }
 
 export const softDeleteCategory = async (req, res, next) => {
     const categoryId  = req.params.categoryId;
-    const category = await CategoryModel.findByIdAndUpdate(categoryId,{isDeleted:true,status:'Inactive'},{new:true});
+    const category = await CategoryModel.findByIdAndUpdate(categoryId,{isDeleted:true,status:'Inactive',updatedBy:req.user._id},{new:true});
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }
-    const softDeleteSubCategory=await SubCategoryModel.updateMany({categoryId},{isDeleted:true,status:'Inactive'} ); 
-    const softDeleteProducts= await ProductModel.updateMany({categoryId},{isDeleted:true,status:'Inactive'} );
+    const softDeleteSubCategory=await SubCategoryModel.updateMany({categoryId},{isDeleted:true,status:'Inactive',updatedBy:req.user._id} ); 
+    const softDeleteProducts= await ProductModel.updateMany({categoryId},{isDeleted:true,status:'Inactive',updatedBy:req.user._id} );
     
     return res.status(200).json({ message: 'success', category,softDeleteSubCategory,softDeleteProducts }); 
 }
