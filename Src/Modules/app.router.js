@@ -2,6 +2,9 @@ import { globalErrorHandler } from '../Services/errorHandling.js'
 
 import AuthRouter from './Auth/auth.router.js'
 import UserRouter from './User/user.router.js'
+import CatagoriesRouter from './Catagories/catagories.router.js'
+import SubCatagoriesRouter from './SubCatagories/subcatagories.router.js'
+import ProductRouter from './Product/product.router.js'
 
 import ConnectDB from '../../DB/connection.js';
 
@@ -15,8 +18,11 @@ app.get('/',(req,res)=>{
 ConnectDB();
 app.use('/auth',AuthRouter);
 app.use('/user',UserRouter);
+app.use('/catagories', CatagoriesRouter);
+app.use('/subCatagories', SubCatagoriesRouter);
+app.use('/products', ProductRouter);
 
-app.get('*',(req,res)=>{
+app.get('*',(req,res)=>{ 
     return res.json({message:'page not found'})
 });
 app.use(globalErrorHandler);
