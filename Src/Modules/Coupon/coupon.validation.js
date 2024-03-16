@@ -11,7 +11,7 @@ export const createCoupon= Joi.object(
    )
 export const updateCoupon= Joi.object(
     {
-        name: Joi.string().min(3).max(30).required(),
+        name: Joi.string().min(3).max(30) ,
         amount:Joi.number().positive(),
         file:generalFieldValidation.file , 
         expiredDate:Joi.date().greater('now'),
