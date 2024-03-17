@@ -4,10 +4,10 @@ import { auth, roles } from "../../Middleware/auth.js";
  import fileUpload, { fileValidation } from "../../Services/multer.js";
 import { asyncHandler } from "../../Services/errorHandling.js";
 import { validation } from "../../Middleware/validation.js";
-// import ReviewRouter from "../Review/review.router.js"
+ import ReviewRouter from "../Review/review.router.js"
 import * as validators from './product.validation.js'
 const router = Router()
-// router.use('/:productId/review',ReviewRouter);
+ router.use('/:productId/review',ReviewRouter);
 router.get('/', auth(roles.Admin), asyncHandler(ProductController.getAllProduct));
 router.get('/:productId', validation(validators.getSpecificProduct), asyncHandler(ProductController.getSpecificProduct));
 router.get('/allProducts/active', asyncHandler(ProductController.getActiveProduct));

@@ -8,6 +8,7 @@ import ProductRouter from './Product/product.router.js'
 import CouponRouter from './Coupon/coupon.router.js'
 import CartRouter from './Cart/cart.router.js' 
 import OrderRouter from './Order/order.router.js'
+import FavoriteRouter from './Favorite/favorite.router.js'
 
 import ConnectDB from '../../DB/connection.js';
 
@@ -27,6 +28,7 @@ app.use('/products', ProductRouter);
 app.use('/coupon', CouponRouter);
 app.use('/cart', CartRouter);
 app.use('/order', OrderRouter);
+app.use('/Favorite', FavoriteRouter);
 
 
 app.get('*',(req,res)=>{ 

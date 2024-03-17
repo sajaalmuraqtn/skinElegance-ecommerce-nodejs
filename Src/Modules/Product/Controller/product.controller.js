@@ -281,9 +281,8 @@ export const getProductWithSubCategory = async (req, res, next) => {
 }
 
 export const getSpecificProduct = async (req, res, next) => {
-    // const product = await ProductModel.findById(req.params.productId).populate('reviews');
-    const product = await ProductModel.findById(req.params.productId);
-    if (!product) {
+    const product = await ProductModel.findById(req.params.productId).populate('reviews');
+     if (!product) {
         return next(new Error("product not found", { cause: 404 }));
     }
 
