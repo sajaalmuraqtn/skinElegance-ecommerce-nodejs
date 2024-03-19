@@ -300,7 +300,7 @@ export const restoreProduct = async (req, res, next) => {
         return next(new Error("can not restore this product category or sub category not available", { cause: 400 }));
     }
 
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive',updatedBy:req.user._id }, { new: true });
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: false, status: 'Active',updatedBy:req.user._id }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 export const softDeleteProduct = async (req, res, next) => {

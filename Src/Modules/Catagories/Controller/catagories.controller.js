@@ -31,7 +31,7 @@ export const getActiveCategory = async (req, res, next) => {
 }
 
 export const createCategory = async (req, res, next) => {
-         const name = req.body.name.toLowerCase();
+          const name = req.body.name.toLowerCase();
         if (await CategoryModel.findOne({ name }).select('name')) {
             return next(new Error("category name already exist", { cause: 409 }));
         }
