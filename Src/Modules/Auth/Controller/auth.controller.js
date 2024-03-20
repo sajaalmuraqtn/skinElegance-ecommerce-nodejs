@@ -7,19 +7,24 @@ import { customAlphabet, nanoid } from 'nanoid';
 
 export const signUp = async (req, res,next) => {
   
-        const { userName, email, password } = req.body;
+        const { userName, email, password,phoneNumber,address} = req.body;
         if (await UserModel.findOne({ email: email })) {
             return next(new Error("email Already exist",{cause:409}));
          }
         const hashPassword = await bcrypt.hashSync(password, parseInt(process.env.SALTROUND));
-
-
+      
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: `${process.env.APP_NAME}/User`
+        }) 
 
         const token = jwt.sign({ email }, process.env.CONFIRMEMAILSECRET);
 
         await sendEmail(email, "confirm Email", `<a href='${req.protocol}://${req.headers.host}/auth/confirmEmail/${token}'>verify</a>`);
 
-        const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id } });
+        const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id },phoneNumber,address });
+        if (!createUser) {
+            return next(new Error(`error while create user `, { cause: 400 }));
+        }
         return res.status(201).json({ message: 'success', createUser })
   
 }
@@ -91,7 +96,7 @@ export const changePassword  = async (req, res,next) => {
     return res.status(200).json({ message: 'success', user });
 }
 export const forgotPassword = async (req, res,next) => {
-    const { email,password,code} = req.body;
+    const { email,password,confirmPassword,code} = req.body;
     const user = await UserModel.findOne({ email: email })
     if (!user) {
         return next(new Error("not register account",{cause:404})); 
@@ -103,6 +108,10 @@ export const forgotPassword = async (req, res,next) => {
     if (match) {
         return next(new Error("same password",{cause:409})); 
     }
+    if (password !== confirmPassword) {
+        return next(new Error("New password and confirm password do not match", { cause: 400 }));
+    }
+
     user.password=await bcrypt.hashSync(password,parseInt(process.env.SALTROUND));
     user.sendCode=null;
     user.changePasswordTime=Date.now();

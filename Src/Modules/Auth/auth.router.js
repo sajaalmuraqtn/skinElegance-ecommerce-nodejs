@@ -3,15 +3,18 @@ import * as AuthController from './Controller/auth.controller.js'
 import fileUpload, { fileValidation } from "../../Services/multer.js";
 import { asyncHandler } from "../../Services/errorHandling.js";
 import { auth, roles } from "../../Middleware/auth.js";
+import { validation } from "../../Middleware/validation.js";
+import * as validators from "./auth.validatiion.js";
+
  const router=Router();
 
-router.post('/signUp',fileUpload(fileValidation.image).single('image'),asyncHandler(AuthController.signUp));
-router.post('/signIn',asyncHandler(AuthController.signIn));
-router.get('/confirmEmail/:token',asyncHandler(AuthController.confirmEmail));
+router.post('/signUp',fileUpload(fileValidation.image).single('image'),validation(validators.signUp),asyncHandler(AuthController.signUp));
+router.post('/signIn' ,asyncHandler(AuthController.signIn));
+router.get('/confirmEmail/:token' ,asyncHandler(AuthController.confirmEmail));
 router.patch('/sendCode',asyncHandler(AuthController.sendCode));
-router.patch('/forgotPassword',asyncHandler(AuthController.forgotPassword));
-router.patch('/changePassword',auth(Object.values(roles)),asyncHandler(AuthController.changePassword));
-router.delete('/deleteInvalidConfirm',auth(roles.Admin),asyncHandler(AuthController.deleteInvalidConfirm));
+router.patch('/forgotPassword',validation(validators.forgotPassword),asyncHandler(AuthController.forgotPassword));
+router.patch('/changePassword',auth(Object.values(roles)),validation(validators.changePassword),asyncHandler(AuthController.changePassword));
+router.delete('/deleteInvalidConfirm',auth(roles.Admin) ,asyncHandler(AuthController.deleteInvalidConfirm));
 
 
 
