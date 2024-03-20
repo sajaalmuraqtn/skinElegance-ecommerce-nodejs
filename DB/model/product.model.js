@@ -26,7 +26,7 @@ const ProductSchema = new Schema({
         type: Number, required: true
     },
     size: {
-        type: Number, required: true
+        type: String,default:'OneSize'
     },
     discount: {
         type: Number, default: 0

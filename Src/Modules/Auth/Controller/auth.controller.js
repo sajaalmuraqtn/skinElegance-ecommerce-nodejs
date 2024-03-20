@@ -6,17 +6,14 @@ import { sendEmail } from '../../../Services/email.js';
 import { customAlphabet, nanoid } from 'nanoid';
 
 export const signUp = async (req, res,next) => {
-    try {
-
+  
         const { userName, email, password } = req.body;
         if (await UserModel.findOne({ email: email })) {
             return next(new Error("email Already exist",{cause:409}));
          }
         const hashPassword = await bcrypt.hashSync(password, parseInt(process.env.SALTROUND));
 
-        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.APP_NAME}/User`
-        });
+
 
         const token = jwt.sign({ email }, process.env.CONFIRMEMAILSECRET);
 
@@ -24,10 +21,7 @@ export const signUp = async (req, res,next) => {
 
         const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id } });
         return res.status(201).json({ message: 'success', createUser })
-    } catch (error) {
-        return res.json({ error: error.stack });
-
-    }
+  
 }
 
 export const confirmEmail = async (req, res,next) => {
@@ -62,6 +56,40 @@ export const sendCode = async (req, res,next) => {
     // return res.status(200).json({ message: 'success', user})
 }
 
+export const changePassword  = async (req, res,next) => {
+    const {   lastPassword, newPassword, confirmPassword } = req.body;
+
+    // Find the user based on user that logged in
+    const user = await UserModel.findById(req.user._id);
+ 
+    // Verify if the provided last password matches the user's current password
+    const isPasswordMatch = await bcrypt.compare(lastPassword, user.password);
+    if (!isPasswordMatch) {
+        return next(new Error("Invalid last password", { cause: 400 }));
+    }
+
+    // Check if the new password is the same as the last password
+    if (lastPassword === newPassword) {
+        return next(new Error("New password cannot be the same as the last password", { cause: 409 }));
+    }
+
+    // Check if the new password matches the confirmed password
+    if (newPassword !== confirmPassword) {
+        return next(new Error("New password and confirm password do not match", { cause: 400 }));
+    }
+
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, parseInt(process.env.SALTROUND));
+
+    // Update user's password and other relevant fields
+    user.password = hashedNewPassword;
+    user.changePasswordTime = Date.now();
+
+    // Save the updated user
+    await user.save();
+
+    return res.status(200).json({ message: 'success', user });
+}
 export const forgotPassword = async (req, res,next) => {
     const { email,password,code} = req.body;
     const user = await UserModel.findOne({ email: email })

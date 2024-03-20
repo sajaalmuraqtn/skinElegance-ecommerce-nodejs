@@ -27,8 +27,10 @@ const UserSchema = new Schema({
     },
     phoneNumber: {
         type: String,
-        required: true
-
+        required: true,
+        trim: true,
+        min: 10,
+        max: 10 
     },
     image: {
         type: Object,

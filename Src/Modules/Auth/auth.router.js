@@ -2,14 +2,16 @@ import { Router } from "express";
 import * as AuthController from './Controller/auth.controller.js'
 import fileUpload, { fileValidation } from "../../Services/multer.js";
 import { asyncHandler } from "../../Services/errorHandling.js";
-const router=Router();
+import { auth, roles } from "../../Middleware/auth.js";
+ const router=Router();
 
 router.post('/signUp',fileUpload(fileValidation.image).single('image'),asyncHandler(AuthController.signUp));
 router.post('/signIn',asyncHandler(AuthController.signIn));
 router.get('/confirmEmail/:token',asyncHandler(AuthController.confirmEmail));
 router.patch('/sendCode',asyncHandler(AuthController.sendCode));
 router.patch('/forgotPassword',asyncHandler(AuthController.forgotPassword));
-router.delete('/deleteInvalidConfirm',asyncHandler(AuthController.deleteInvalidConfirm));
+router.patch('/changePassword',auth(Object.values(roles)),asyncHandler(AuthController.changePassword));
+router.delete('/deleteInvalidConfirm',auth(roles.Admin),asyncHandler(AuthController.deleteInvalidConfirm));
 
 
 
