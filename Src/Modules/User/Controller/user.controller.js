@@ -42,7 +42,7 @@ export const updateProfile=async(req,res,next)=>{
 
 export const getAllUsers = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
-    const users = await UserModel.find({role:'User'}).limit(limit).skip(skip).populate('subCategories');
+    const users = await UserModel.find({role:'User'}).limit(limit).skip(skip);
     return res.status(201).json({ message: 'success', users })
 }
 
