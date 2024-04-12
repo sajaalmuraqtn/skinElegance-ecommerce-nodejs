@@ -7,7 +7,7 @@ import { pagination } from "../../../Services/pagination.js";
 import SubCategoryModel from "../../../../DB/model/subCategory.model.js";
 
 export const getCatagories = async (req, res, next) => {
-    const { limit, skip } = pagination(req.query.page, req.query.limit);
+    const { limit, skip } = pagination(req.query.page, 6);
     const categories = await CategoryModel.find().limit(limit).skip(skip).populate('subCategories');
     return res.status(201).json({ message: 'success', categories })
 }
@@ -23,7 +23,7 @@ export const getSpecificCategory = async (req, res, next) => {
 
 export const getActiveCategory = async (req, res, next) => {
    
-    const { limit, skip } = pagination(req.query.page, req.query.limit)
+    const { limit, skip } = pagination(req.query.page, 6)
 
     const activeCatagories = await CategoryModel.find({ status: 'Active' }).limit(limit).skip(skip);
     return res.status(200).json({ message: 'success', count: activeCatagories.length, activeCatagories });
