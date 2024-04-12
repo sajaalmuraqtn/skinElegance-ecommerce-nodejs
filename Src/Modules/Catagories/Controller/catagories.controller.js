@@ -7,7 +7,7 @@ import { pagination } from "../../../Services/pagination.js";
 import SubCategoryModel from "../../../../DB/model/subCategory.model.js";
 
 export const getCatagories = async (req, res, next) => {
-    const { limit, skip } = pagination(req.query.page, 6);
+    const { limit, skip } = pagination(req.query.page, req.query.limit);
     const categories = await CategoryModel.find().limit(limit).skip(skip).populate('subCategories');
     return res.status(201).json({ message: 'success', categories })
 }
