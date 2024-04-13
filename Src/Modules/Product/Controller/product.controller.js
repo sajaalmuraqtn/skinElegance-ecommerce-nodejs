@@ -87,7 +87,7 @@ export const createProduct = async (req, res, next) => {
     if (checkSubCategory.status == "Inactive" || checkSubCategory.isDeleted) {
         return next(new Error("subcategory is not available", { cause: 400 }));
     }
-
+     req.body.categoryName=checkCategory.name;
     const name = req.body.name.toLowerCase();
     if (await ProductModel.findOne({ name }).select('name')) {
         return next(new Error("product name already exist", { cause: 409 }));

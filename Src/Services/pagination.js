@@ -4,7 +4,7 @@ export const pagination=(page,limit)=>{
         page=1;
     } 
     if (!limit || limit<=0) {
-        limit=4;
+        limit='';
     } 
     const skip=(page-1)*limit;
     return {limit,skip};
