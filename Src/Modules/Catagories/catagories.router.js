@@ -13,6 +13,7 @@ const router=Router();
 router.use('/:categoryId/subCatagories',validation(validators.getSpecificCategory),SubCatagoriesRouter);
 router.get('/',auth(endPoint.getall),asyncHandler(CatagoriesController.getCatagories));
 router.get('/active',asyncHandler(CatagoriesController.getActiveCategory));
+router.get('/LatestNewActiveCategory',asyncHandler(CatagoriesController.getActiveCategory));
 router.get('/:categoryId',validation(validators.getSpecificCategory),asyncHandler(CatagoriesController.getSpecificCategory));
 
 router.post('/create',auth(endPoint.create),fileUpload(fileValidation.image).single('image'),validation(validators.createCategory),asyncHandler(CatagoriesController.createCategory))

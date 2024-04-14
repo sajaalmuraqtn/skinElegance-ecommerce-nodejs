@@ -30,6 +30,12 @@ export const getActiveCategory = async (req, res, next) => {
 
 }
 
+export const getLatestNewActiveCategory = async (req, res, next) => {
+    const { limit, skip } = pagination(req.query.page, req.query.limit)
+    const activeCatagories = await CategoryModel.find({ status: 'Active' }).limit(limit).skip(skip).populate('subCategories').sort('-createdAt');
+    return res.status(200).json({ message: 'success', count: activeCatagories.length, activeCatagories });
+}
+
 export const createCategory = async (req, res, next) => {
           const name = req.body.name.toLowerCase();
         if (await CategoryModel.findOne({ name }).select('name')) {
