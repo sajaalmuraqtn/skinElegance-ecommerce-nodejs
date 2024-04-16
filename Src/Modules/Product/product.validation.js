@@ -42,12 +42,14 @@ export const updateProduct = Joi.object(
 export const getProductWithCategory = Joi.object(
     {
         categoryId: Joi.string().min(24).max(24).required(),
+        page: Joi.number().min(1).positive()
     }
 )
 export const getProductWithSubCategory = Joi.object(
     {
         categoryId: Joi.string().min(24).max(24).required(),
         subCategoryId: Joi.string().min(24).max(24).required(),
+        page: Joi.number().min(1).positive()
     }
 )
 export const getSpecificProduct = Joi.object(
