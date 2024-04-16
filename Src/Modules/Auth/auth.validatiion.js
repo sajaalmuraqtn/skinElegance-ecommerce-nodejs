@@ -20,6 +20,12 @@ export const signIn = Joi.object(
         password: generalFieldValidation.password.required(),
     }
 )
+export const adminSignIn = Joi.object(
+    {
+        email: generalFieldValidation.email,
+        password: generalFieldValidation.password.required(),
+    }
+)
 
 export const forgotPassword = Joi.object(
     {

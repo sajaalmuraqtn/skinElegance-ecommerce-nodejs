@@ -8,12 +8,13 @@ import * as validators from "./auth.validatiion.js";
 
  const router=Router();
 
-router.post('/signUp',fileUpload(fileValidation.image).single('image'),validation(validators.signUp),asyncHandler(AuthController.signUp));
-router.post('/signIn' ,asyncHandler(AuthController.signIn));
+router.post('/signUp',fileUpload(fileValidation.image).single('image'),validation(validators.signUp),validation(validators.signUp),asyncHandler(AuthController.signUp));
+router.post('/signIn',validation(validators.signIn) ,asyncHandler(AuthController.signIn));
+router.post('/adminSignIn' ,asyncHandler(AuthController.adminSignIn));
 router.get('/confirmEmail/:token' ,asyncHandler(AuthController.confirmEmail));
 router.patch('/sendCode',asyncHandler(AuthController.sendCode));
 router.patch('/forgotPassword',validation(validators.forgotPassword),asyncHandler(AuthController.forgotPassword));
-router.patch('/changePassword',auth(Object.values(roles)),validation(validators.changePassword),asyncHandler(AuthController.changePassword));
+router.patch('/changePassword',validation(validators.signUp),auth(Object.values(roles)),validation(validators.changePassword),asyncHandler(AuthController.changePassword));
 router.delete('/deleteInvalidConfirm',auth(roles.Admin) ,asyncHandler(AuthController.deleteInvalidConfirm));
 
 

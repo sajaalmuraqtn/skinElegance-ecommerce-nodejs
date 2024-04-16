@@ -120,6 +120,29 @@ export const forgotPassword = async (req, res,next) => {
 }
 
 
+export const adminSignIn = async (req, res,next) => {
+    const { email, password } = req.body;
+    const user = await UserModel.findOne({ email: email });
+    if (user.role!='Admin') {
+        return next(new Error("invalid authorization", { cause: 400 }));
+    }
+    if (!user) {
+        return next(new Error("data invalid",{cause:400}));  
+    }
+    if (!user.confirmEmail) {
+        return next(new Error("please confirm your email!!!",{cause:400}));  
+    }
+    const match = await bcrypt.compareSync(password, user.password);
+    if (!match) {
+        return next(new Error("data invalid",{cause:400}));  
+    }
+    const token = await jwt.sign({ id: user._id, role: user.role, status: user.status }, process.env.LOGINSECRET,
+        // {expiresIn:'5m'}
+    );
+    const refreshToken = await jwt.sign({ id: user._id, role: user.role, status: user.status }, process.env.LOGINSECRET, { expiresIn:60*60*24*30 });
+
+    return res.status(201).json({ message: 'success', token, refreshToken })
+}
 export const signIn = async (req, res,next) => {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email: email });
@@ -141,6 +164,7 @@ export const signIn = async (req, res,next) => {
 
     return res.status(201).json({ message: 'success', token, refreshToken })
 }
+
 
 
 export const deleteInvalidConfirm=async(req,res,next)=>{
