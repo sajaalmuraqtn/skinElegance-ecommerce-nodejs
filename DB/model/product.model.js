@@ -44,7 +44,8 @@ const ProductSchema = new Schema({
         type: Date, required: true
     }
     ,
-    categoryName:  { type: String, required: true}
+    categoryName:  { type: String, required: true},
+    subCategoryName:  { type: String, required: true}
     ,
     isDeleted: {
         type: Boolean, default: false

@@ -20,7 +20,7 @@ export const getAllProduct = async (req, res, next) => {
     queryObj = JSON.parse(queryObj);
 
     const mongooseQuery = ProductModel.find(queryObj).limit(limit).skip(skip);
-   
+
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
@@ -80,7 +80,8 @@ export const createProduct = async (req, res, next) => {
     if (checkSubCategory.status == "Inactive" || checkSubCategory.isDeleted) {
         return next(new Error("subcategory is not available", { cause: 400 }));
     }
-     req.body.categoryName=checkCategory.name;
+    req.body.categoryName = checkCategory.name;
+    req.body.subCategoryName = checkSubCategory.name;
     const name = req.body.name.toLowerCase();
     if (await ProductModel.findOne({ name }).select('name')) {
         return next(new Error("product name already exist", { cause: 409 }));
@@ -98,19 +99,19 @@ export const createProduct = async (req, res, next) => {
     }
     req.body.createdBy = req.user._id;
     req.body.updatedBy = req.user._id;
-    
-    const user =await UserModel.findById(req.user._id);
-    const createdByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
+
+    const user = await UserModel.findById(req.user._id);
+    const createdByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
     }
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    }   
-    
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+
     req.body.createdByUser = createdByUser;
     req.body.updatedByUser = updatedByUser;
     const product = await ProductModel.create(req.body);
@@ -131,10 +132,21 @@ export const updateProduct = async (req, res, next) => {
         if (!checkCategory) {
             return next(new Error("category not found", { cause: 404 }));
         }
-        if (checkCategory.status == "Inactive" || checkCategory.isDeleted) {
-            return next(new Error("category is not available", { cause: 400 }));
+        if (!req.body.subCategoryId) {
+            return next(new Error("you should change the sub category too", { cause: 400 }));
         }
+        const checkSubCategory = await SubCategoryModel.findOne({ _id: req.body.subCategoryId, categoryId:req.body.categoryId });
+        if (!checkSubCategory) {
+            return next(new Error("sub category not found", { cause: 404 }));
+        }
+        if (checkSubCategory.status == "Inactive" || checkSubCategory.isDeleted) {
+            return next(new Error("subcategory is not available", { cause: 400 }));
+        }
+
         product.categoryId = req.body.categoryId;
+        product.subCategoryId = req.body.subCategoryId;
+        product.categoryName=checkCategory.name;
+        product.subCategoryName=checkSubCategory.name;
     }
 
     if (req.body.subCategoryId) {
@@ -146,6 +158,8 @@ export const updateProduct = async (req, res, next) => {
             return next(new Error("subcategory is not available", { cause: 400 }));
         }
         product.subCategoryId = req.body.subCategoryId;
+        product.subCategoryName=checkSubCategory.name;
+
     }
 
 
@@ -179,11 +193,11 @@ export const updateProduct = async (req, res, next) => {
         product.expiredDate = req.body.expiredDate;
     }
     if (req.body.status) {
-        const checkCategory=await CategoryModel.findById(product.categoryId);
-        const checkSubCategory=await CategoryModel.findById(product.subCategoryId);
-        if ( req.body.status=="Active" && (checkCategory.isDeleted || checkCategory.status=="Inactive" || checkSubCategory.isDeleted || checkSubCategory.status=="Inactive")) {
+        const checkCategory = await CategoryModel.findById(product.categoryId);
+        const checkSubCategory = await CategoryModel.findById(product.subCategoryId);
+        if (req.body.status == "Active" && (checkCategory.isDeleted || checkCategory.status == "Inactive" || checkSubCategory.isDeleted || checkSubCategory.status == "Inactive")) {
             return next(new Error("can not active this product category or sub category not available", { cause: 400 }));
-        } 
+        }
         product.status = req.body.status;
     }
 
@@ -206,13 +220,13 @@ export const updateProduct = async (req, res, next) => {
     }
 
     product.updatedBy = req.user._id;
-    const user =await UserModel.findById(req.user._id);
+    const user = await UserModel.findById(req.user._id);
 
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
     product.updatedByUser = updatedByUser;
     await product.save()
 
@@ -298,7 +312,7 @@ export const getProductWithSubCategory = async (req, res, next) => {
 
 export const getSpecificProduct = async (req, res, next) => {
     const product = await ProductModel.findById(req.params.productId).populate('reviews');
-     if (!product) {
+    if (!product) {
         return next(new Error("product not found", { cause: 404 }));
     }
 
@@ -310,19 +324,19 @@ export const restoreProduct = async (req, res, next) => {
     if (!checkProduct) {
         return next(new Error("product not found", { cause: 404 }));
     }
-    const checkCategory=await CategoryModel.findById(checkProduct.categoryId);
-    const checkSubCategory=await SubCategoryModel.findById(checkProduct.subCategoryId);
-    if ( checkCategory.isDeleted || checkCategory.status=="Inactive" || checkSubCategory.isDeleted || checkSubCategory.status=="Inactive") {
+    const checkCategory = await CategoryModel.findById(checkProduct.categoryId);
+    const checkSubCategory = await SubCategoryModel.findById(checkProduct.subCategoryId);
+    if (checkCategory.isDeleted || checkCategory.status == "Inactive" || checkSubCategory.isDeleted || checkSubCategory.status == "Inactive") {
         return next(new Error("can not restore this product category or sub category not available", { cause: 400 }));
     }
-    const user =await UserModel.findById(req.user._id);
+    const user = await UserModel.findById(req.user._id);
 
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: false, status: 'Active',updatedBy:req.user._id,updatedByUser:updatedByUser }, { new: true });
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: false, status: 'Active', updatedBy: req.user._id, updatedByUser: updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 export const softDeleteProduct = async (req, res, next) => {
@@ -331,14 +345,14 @@ export const softDeleteProduct = async (req, res, next) => {
         return next(new Error("product not found", { cause: 404 }));
     }
 
-    const user =await UserModel.findById(req.user._id);
+    const user = await UserModel.findById(req.user._id);
 
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive',updatedBy:req.user._id,updatedByUser:updatedByUser }, { new: true });
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive', updatedBy: req.user._id, updatedByUser: updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 

@@ -84,7 +84,13 @@ export const updateCategory = async (req, res, next) => {
     if (!category) {
         return next(new Error(` invalid id ${id} `, { cause: 400 }));
     }
+    const user =await UserModel.findById(req.user._id);
 
+    const updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
     if (req.body.name) {
         const name = req.body.name.toLowerCase();
         if (await CategoryModel.findOne({ name }).select('name')) {
@@ -92,6 +98,9 @@ export const updateCategory = async (req, res, next) => {
         }
         category.name = name;
         category.slug = slugify(name);
+        await SubCategoryModel.updateMany({ categoryId }, {  updatedBy: req.user._id,categoryName:category.name,updatedByUser });
+        await ProductModel.updateMany({ categoryId }, {  updatedBy: req.user._id,categoryName:category.name,updatedByUser });
+
     }
 
     if (req.file) {
@@ -107,13 +116,7 @@ export const updateCategory = async (req, res, next) => {
         await ProductModel.updateMany({ categoryId }, { status: req.body.status, updatedBy: req.user._id });
 
     }
-    const user =await UserModel.findById(req.user._id);
-
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
+    
     category.updatedByUser = updatedByUser;
 
     await category.save()
