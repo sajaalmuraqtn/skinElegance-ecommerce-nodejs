@@ -20,9 +20,17 @@ export const createReview = async (req, res, next) => {
     if (checkReview) {
         return next(new Error("already review", { cause: 400 }));
     }
+    const user =await UserModel.findById(req.user._id);
+
+    const createdByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
+
     const review = await ReviewModel.create({
         comment,
-        rating,
+        rating,createdByUser,
         createdBy: req.user._id,
         orderId:order._id,
         productId:productId.toString()

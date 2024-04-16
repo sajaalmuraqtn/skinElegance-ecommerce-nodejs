@@ -34,6 +34,8 @@ const ProductSchema = new Schema({
     number_sellers: {
         type: Number, default: 0
     }
+    , 
+    user:{type:Object,required:true}
     ,
     status: {
         type: String, enum: ['Active', 'Inactive'], default: 'Active'

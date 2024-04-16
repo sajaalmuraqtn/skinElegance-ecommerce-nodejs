@@ -9,7 +9,8 @@ const CouponSchema = new Schema({
     }, 
     image:{
         type:Object, required: true
-    },
+    }, user:{type:Object,required:true},
+
     usedBy: [
         {
             type: Types.ObjectId, ref: 'User'
@@ -21,7 +22,10 @@ const CouponSchema = new Schema({
     ,
     expiredDate: {
         type: Date, required: true
-    },
+    },  
+    createdByUser:{type:Object},
+    updatedByUser:{type:Object},
+
     createdBy: {
         type: Types.ObjectId, ref: 'User'
     },

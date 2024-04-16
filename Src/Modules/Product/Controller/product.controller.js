@@ -11,7 +11,7 @@ export const getAllProduct = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
 
     let queryObj = { ...req.query };
-    const execQuery = ['page', 'limit', 'skip', 'sort', 'search', 'fields'];
+    const execQuery = ['page', 'limit', 'skip', 'sort'];
     execQuery.map((ele) => {
         delete queryObj[ele];
     })
@@ -20,14 +20,7 @@ export const getAllProduct = async (req, res, next) => {
     queryObj = JSON.parse(queryObj);
 
     const mongooseQuery = ProductModel.find(queryObj).limit(limit).skip(skip);
-    if (req.query.search) {
-        mongooseQuery.find({
-            $or: [
-                { name: { $regex: req.query.search, $options: 'i' } },
-                { description: { $regex: req.query.search, $options: 'i' } }
-            ]
-        })
-    }
+   
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
@@ -105,6 +98,21 @@ export const createProduct = async (req, res, next) => {
     }
     req.body.createdBy = req.user._id;
     req.body.updatedBy = req.user._id;
+    
+    const user =await UserModel.findById(req.user._id);
+    const createdByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    }
+    const updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    }   
+    
+    req.body.createdByUser = createdByUser;
+    req.body.updatedByUser = updatedByUser;
     const product = await ProductModel.create(req.body);
     if (!product) {
         return next(new Error("error while creating product", { cause: 400 }));
@@ -198,6 +206,14 @@ export const updateProduct = async (req, res, next) => {
     }
 
     product.updatedBy = req.user._id;
+    const user =await UserModel.findById(req.user._id);
+
+    const updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
+    product.updatedByUser = updatedByUser;
     await product.save()
 
     return res.status(201).json({ message: 'success', product });
@@ -299,16 +315,38 @@ export const restoreProduct = async (req, res, next) => {
     if ( checkCategory.isDeleted || checkCategory.status=="Inactive" || checkSubCategory.isDeleted || checkSubCategory.status=="Inactive") {
         return next(new Error("can not restore this product category or sub category not available", { cause: 400 }));
     }
+    const user =await UserModel.findById(req.user._id);
 
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: false, status: 'Active',updatedBy:req.user._id }, { new: true });
+    const updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: false, status: 'Active',updatedBy:req.user._id,updatedByUser:updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 export const softDeleteProduct = async (req, res, next) => {
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive',updatedBy:req.user._id }, { new: true });
+    const checkProduct = await ProductModel.findById(req.params.productId);
+    if (!checkProduct) {
+        return next(new Error("product not found", { cause: 404 }));
+    }
+
+    const user =await UserModel.findById(req.user._id);
+
+    const updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive',updatedBy:req.user._id,updatedByUser:updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 
 export const hardDeleteProduct = async (req, res, next) => {
+    const checkProduct = await ProductModel.findById(req.params.productId);
+    if (!checkProduct) {
+        return next(new Error("product not found", { cause: 404 }));
+    }
     const product = await ProductModel.findByIdAndDelete(req.params.productId);
     return res.status(201).json({ message: 'success', product });
 }

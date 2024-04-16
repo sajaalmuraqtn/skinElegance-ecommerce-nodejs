@@ -9,7 +9,20 @@ export const CreateCoupon = async (req, res, next) => {
   req.body.expiredDate = new Date(req.body.expiredDate);
   req.body.createdBy = req.user._id;
   req.body.updatedBy = req.user._id;
+  const user =await UserModel.findById(req.user._id);
+  const createdByUser={
+      userName:user.userName,
+      image:user.image,
+      _id:user._id
+  }
+  const updatedByUser={
+      userName:user.userName,
+      image:user.image,
+      _id:user._id
+  }   
 
+req.body.createdByUser=createdByUser;
+  req.body.updatedByUser=updatedByUser;
   const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
     folder: `${process.env.APP_NAME}/coupons`
   })
@@ -71,6 +84,14 @@ export const UpdateCoupon = async (req, res, next) => {
     coupon.image = { secure_url, public_id };
   }
 
+  const user =await UserModel.findById(req.user._id);
+
+  const updatedByUser={
+      userName:user.userName,
+      image:user.image,
+      _id:user._id
+  } 
+  coupon.updatedByUser = updatedByUser;
   coupon.updatedBy = req.user._id;
 
   await coupon.save()
@@ -83,8 +104,14 @@ export const SoftDelete = async (req, res, next) => {
   if (! await CouponModel.findById(couponId)) {
     return res.status(404).json({ message: 'coupon not found' });
   }
+  const user =await UserModel.findById(req.user._id);
 
-  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: false }, { isDeleted: true, updatedBy: req.user._id }, { new: true });
+  const updatedByUser={
+      userName:user.userName,
+      image:user.image,
+      _id:user._id
+  } 
+  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: false }, { isDeleted: true,updatedByUser, updatedBy: req.user._id }, { new: true });
   if (!coupon) {
     return res.status(400).json({ message: 'can not delete this coupon ' });
   }
@@ -110,8 +137,14 @@ export const Restore = async (req, res, next) => {
   if (! await CouponModel.findById(couponId)) {
     return res.status(404).json({ message: 'coupon not found' });
   }
+  const user =await UserModel.findById(req.user._id);
 
-  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: true }, { isDeleted: false, updatedBy: req.user._id }, { new: true });
+  const updatedByUser={
+      userName:user.userName,
+      image:user.image,
+      _id:user._id
+  } 
+  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: true }, { isDeleted: false, updatedBy: req.user._id,updatedByUser }, { new: true });
   if (!coupon) {
     return res.status(400).json({ message: 'can not restore this coupon ' });
   }

@@ -37,7 +37,8 @@ const OrderSchema=new Schema({
     },
     reasonRejected:String,
     note:String
-    ,
+    ,  updatedByUser:{type:Object},
+
     updatedBy:{
         type:Types.ObjectId,ref:'User' 
     }
