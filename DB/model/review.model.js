@@ -13,12 +13,12 @@ const ReviewsSchema=new Schema({
      ,
     productId:{
         type:Types.ObjectId,ref:'Product' 
-    }
-    ,user:{type:Object,required:true},
-    createdBy:{
-        type:Types.ObjectId,ref:'User' 
-    }
-
+    }  ,
+    createdByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User',required:true},
+        userName: String
+    },
 },{
     timestamps:true
 })

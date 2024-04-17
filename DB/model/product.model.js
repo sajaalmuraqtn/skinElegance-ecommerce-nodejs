@@ -37,12 +37,12 @@ const ProductSchema = new Schema({
     ,
     createdByUser: {
         image: Object,
-        _id: { type: Types.ObjectId, ref: 'User' },
+        _id: { type: Types.ObjectId, ref: 'User',required:true},
         userName: String
     },
     updatedByUser: {
         image: Object,
-        _id: { type: Types.ObjectId, ref: 'User' },
+        _id: { type: Types.ObjectId, ref: 'User',required:true},
         userName: String
     },
     status: {

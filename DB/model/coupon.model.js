@@ -9,7 +9,7 @@ const CouponSchema = new Schema({
     },
     image: {
         type: Object, required: true
-    }, user: { type: Object, required: true },
+    },
 
     usedBy: [
         {
@@ -25,12 +25,12 @@ const CouponSchema = new Schema({
     },
     createdByUser: {
         image: Object,
-        _id: { type: Types.ObjectId, ref: 'User' },
+        _id: { type: Types.ObjectId, ref: 'User',required:true },
         userName: String
     },
     updatedByUser: {
         image: Object,
-        _id: { type: Types.ObjectId, ref: 'User' },
+        _id: { type: Types.ObjectId, ref: 'User',required:true  },
         userName: String
     }
 }, {

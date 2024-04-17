@@ -28,7 +28,6 @@ req.body.createdByUser=createdByUser;
   })
   
   req.body.image = { secure_url, public_id };
-
   const coupon = await CouponModel.create(req.body);
   return res.status(201).json({ message: 'success', coupon });
 }
@@ -53,7 +52,6 @@ export const getActiveCoupons = async (req, res, next) => {
 }
 
 export const UpdateCoupon = async (req, res, next) => {
-
   const couponId = req.params.couponId;
   const coupon = await CouponModel.findById(couponId);
 
@@ -95,7 +93,6 @@ export const UpdateCoupon = async (req, res, next) => {
 
   await coupon.save()
   return res.status(200).json({ message: 'success', coupon });
-
 }
 
 export const SoftDelete = async (req, res, next) => {
@@ -115,7 +112,6 @@ export const SoftDelete = async (req, res, next) => {
     return res.status(400).json({ message: 'can not delete this coupon ' });
   }
   return res.status(200).json({ message: 'success', coupon });
-
 }
 
 export const HardDelete = async (req, res, next) => {

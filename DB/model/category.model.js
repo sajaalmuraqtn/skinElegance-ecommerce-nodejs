@@ -14,12 +14,12 @@ const CategorySchema = new Schema({
         type: String, enum: ['Active', 'Inactive'], default: 'Active'
     },createdByUser: {
         image: Object,
-        _id: { type: Types.ObjectId, ref: 'User' },
+        _id: { type: Types.ObjectId, ref: 'User',required:true  },
         userName: String
     },
     updatedByUser: {
         image: Object,
-        _id: { type: Types.ObjectId, ref: 'User' },
+        _id: { type: Types.ObjectId, ref: 'User',required:true  },
         userName: String
     },
 
