@@ -5,6 +5,7 @@ import cloudinary from "../../../Services/cloudinary.js";
 import ProductModel from "../../../../DB/model/product.model.js";
 import { asyncHandler } from "../../../Services/errorHandling.js";
 import { pagination } from "../../../Services/pagination.js";
+import UserModel from "../../../../DB/model/user.model.js";
 
 export const getAllProduct = async (req, res, next) => {
 

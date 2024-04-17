@@ -3,6 +3,7 @@ import CategoryModel from "../../../../DB/model/category.model.js";
 import SubCategoryModel from "../../../../DB/model/subCategory.model.js";
 import ProductModel from "../../../../DB/model/product.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
+import UserModel from "../../../../DB/model/user.model.js";
 
 export const getSubCategory = async (req, res, next) => {
     const categoryId = req.params.categoryId;

@@ -1,4 +1,5 @@
 import CouponModel from "../../../../DB/model/coupon.model.js";
+import UserModel from "../../../../DB/model/user.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
 
 export const CreateCoupon = async (req, res, next) => {
