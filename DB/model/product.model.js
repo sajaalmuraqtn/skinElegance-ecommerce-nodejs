@@ -15,18 +15,18 @@ const ProductSchema = new Schema({
     description: {
         type: String, required: true
     },
-    mainImage: { type: Object,required: true }
+    mainImage: { type: Object, required: true }
     ,
     subImages: [
         {
             type: Object, required: true
         }
-    ], 
+    ],
     finalPrice: {
         type: Number, required: true
     },
     size: {
-        type: String,default:'OneSize'
+        type: String, default: 'OneSize'
     },
     discount: {
         type: Number, default: 0
@@ -34,9 +34,17 @@ const ProductSchema = new Schema({
     number_sellers: {
         type: Number, default: 0
     }
-    , 
-    user:{type:Object,required:true}
     ,
+    createdByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User' },
+        userName: String
+    },
+    updatedByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User' },
+        userName: String
+    },
     status: {
         type: String, enum: ['Active', 'Inactive'], default: 'Active'
     },
@@ -44,8 +52,8 @@ const ProductSchema = new Schema({
         type: Date, required: true
     }
     ,
-    categoryName:  { type: String, required: true},
-    subCategoryName:  { type: String, required: true}
+    categoryName: { type: String, required: true },
+    subCategoryName: { type: String, required: true }
     ,
     isDeleted: {
         type: Boolean, default: false
@@ -56,18 +64,10 @@ const ProductSchema = new Schema({
     , subCategoryId: {
         type: Types.ObjectId, ref: 'SubCategory', required: true
     }
-    ,
-    createdBy: {
-        type: Types.ObjectId, ref: 'User', required: true
-    },
-    updatedBy: {
-        type: Types.ObjectId, ref: 'User', required: true
-    }
-
 }, {
     timestamps: true,
-    toJSON:{virtuals:true},
-    toObject:{virtuals:true}
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
 
 ProductSchema.virtual("reviews",

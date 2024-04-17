@@ -8,8 +8,7 @@ export const CreateCoupon = async (req, res, next) => {
     return next(new Error("coupon name already exist", { cause: 409 }));
   }
   req.body.expiredDate = new Date(req.body.expiredDate);
-  req.body.createdBy = req.user._id;
-  req.body.updatedBy = req.user._id;
+  
   const user =await UserModel.findById(req.user._id);
   const createdByUser={
       userName:user.userName,
@@ -93,7 +92,6 @@ export const UpdateCoupon = async (req, res, next) => {
       _id:user._id
   } 
   coupon.updatedByUser = updatedByUser;
-  coupon.updatedBy = req.user._id;
 
   await coupon.save()
   return res.status(200).json({ message: 'success', coupon });
@@ -112,7 +110,7 @@ export const SoftDelete = async (req, res, next) => {
       image:user.image,
       _id:user._id
   } 
-  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: false }, { isDeleted: true,updatedByUser, updatedBy: req.user._id }, { new: true });
+  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: false }, { isDeleted: true,updatedByUser}, { new: true });
   if (!coupon) {
     return res.status(400).json({ message: 'can not delete this coupon ' });
   }
@@ -145,7 +143,7 @@ export const Restore = async (req, res, next) => {
       image:user.image,
       _id:user._id
   } 
-  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: true }, { isDeleted: false, updatedBy: req.user._id,updatedByUser }, { new: true });
+  const coupon = await CouponModel.findOneAndUpdate({ _id: couponId, isDeleted: true }, { isDeleted: false,updatedByUser }, { new: true });
   if (!coupon) {
     return res.status(400).json({ message: 'can not restore this coupon ' });
   }

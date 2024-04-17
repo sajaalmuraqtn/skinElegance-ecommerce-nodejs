@@ -37,12 +37,12 @@ const OrderSchema=new Schema({
     },
     reasonRejected:String,
     note:String
-    ,  updatedByUser:{type:Object},
-
-    updatedBy:{
-        type:Types.ObjectId,ref:'User' 
+    ,
+    updatedByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User' },
+        userName: String
     }
-
 },{
     timestamps:true
 })

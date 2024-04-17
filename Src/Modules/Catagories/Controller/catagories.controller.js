@@ -73,7 +73,7 @@ export const createCategory = async (req, res, next) => {
         image:user.image,
         _id:user._id
     }   
-    const category = await CategoryModel.create({ name: name, slug: slugify(name), image: { secure_url, public_id }, createdByUser,updatedByUser, createdBy: req.user._id, updatedBy: req.user._id })
+    const category = await CategoryModel.create({ name: name, slug: slugify(name), image: { secure_url, public_id }, createdByUser,updatedByUser})
     return res.status(201).json({ message: 'success', category });
 
 }
@@ -98,8 +98,8 @@ export const updateCategory = async (req, res, next) => {
         }
         category.name = name;
         category.slug = slugify(name);
-        await SubCategoryModel.updateMany({ categoryId }, {  updatedBy: req.user._id,categoryName:category.name,updatedByUser });
-        await ProductModel.updateMany({ categoryId }, {  updatedBy: req.user._id,categoryName:category.name,updatedByUser });
+        await SubCategoryModel.updateMany({ categoryId }, {categoryName:category.name,updatedByUser });
+        await ProductModel.updateMany({ categoryId }, {categoryName:category.name,updatedByUser });
 
     }
 
@@ -112,15 +112,13 @@ export const updateCategory = async (req, res, next) => {
     }
     if (req.body.status) {
         category.status = req.body.status;
-        await SubCategoryModel.updateMany({ categoryId }, { status: req.body.status, updatedBy: req.user._id });
-        await ProductModel.updateMany({ categoryId }, { status: req.body.status, updatedBy: req.user._id });
+        await SubCategoryModel.updateMany({ categoryId }, { status: req.body.status,updatedByUser});
+        await ProductModel.updateMany({ categoryId }, { status: req.body.status,updatedByUser});
 
     }
     
     category.updatedByUser = updatedByUser;
-
     await category.save()
-
     return res.status(201).json({ message: 'success', category });
 
 }
@@ -134,13 +132,13 @@ export const restoreCategory = async (req, res, next) => {
         image:user.image,
         _id:user._id
     } 
-    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: false, status: 'Active', updatedBy: req.user._id,updatedByUser:updatedByUser }, { new: true });
+    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: false, status: 'Active', updatedByUser:updatedByUser }, { new: true });
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }
  
-    const restoreSubCategory = await SubCategoryModel.updateMany({ categoryId }, { isDeleted: false, status: 'Active', updatedBy: req.user._id,updatedByUser:updatedByUser });
-    const restoreProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: false, status: 'Active', updatedBy: req.user._id,updatedByUser:updatedByUser  });
+    const restoreSubCategory = await SubCategoryModel.updateMany({ categoryId }, { isDeleted: false, status: 'Active',updatedByUser:updatedByUser });
+    const restoreProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: false, status: 'Active',updatedByUser:updatedByUser  });
 
     return res.status(200).json({ message: 'success', category, restoreSubCategory, restoreProducts });
 }
@@ -155,12 +153,12 @@ export const softDeleteCategory = async (req, res, next) => {
         _id:user._id
     } 
     category.updatedByUser = updatedByUser;
-    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: true, status: 'Inactive', updatedBy: req.user._id,updatedByUser:updatedByUser  }, { new: true });
+    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  }, { new: true });
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }
-    const softDeleteSubCategory = await SubCategoryModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive', updatedBy: req.user._id,updatedByUser:updatedByUser  },{new:true});
-    const softDeleteProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive', updatedBy: req.user._id,updatedByUser:updatedByUser  },{new:true});
+    const softDeleteSubCategory = await SubCategoryModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  },{new:true});
+    const softDeleteProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  },{new:true});
 
     return res.status(200).json({ message: 'success', category, softDeleteSubCategory, softDeleteProducts });
 }

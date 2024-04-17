@@ -12,25 +12,20 @@ const CategorySchema = new Schema({
     },
     status: {
         type: String, enum: ['Active', 'Inactive'], default: 'Active'
-    }, createdByUser: {
-        type: Object,
-        required: true
-    }
-    , updatedByUser: {
-        type: Object,
-        required: true
+    },createdByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User' },
+        userName: String
+    },
+    updatedByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User' },
+        userName: String
     },
 
     isDeleted: {
         type: Boolean, default: false
-    },
-    createdBy: {
-        type: Types.ObjectId, ref: 'User', required: true
-    },
-    updatedBy: {
-        type: Types.ObjectId, ref: 'User', required: true
     }
-
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

@@ -6,10 +6,10 @@ const CouponSchema = new Schema({
     },
     amount: {
         type: Number, required: true
-    }, 
-    image:{
-        type:Object, required: true
-    }, user:{type:Object,required:true},
+    },
+    image: {
+        type: Object, required: true
+    }, user: { type: Object, required: true },
 
     usedBy: [
         {
@@ -22,17 +22,17 @@ const CouponSchema = new Schema({
     ,
     expiredDate: {
         type: Date, required: true
-    },  
-    createdByUser:{type:Object},
-    updatedByUser:{type:Object},
-
-    createdBy: {
-        type: Types.ObjectId, ref: 'User'
     },
-    updatedBy: {
-        type: Types.ObjectId, ref: 'User'
+    createdByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User' },
+        userName: String
+    },
+    updatedByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User' },
+        userName: String
     }
-
 }, {
     timestamps: true
 })

@@ -201,26 +201,34 @@ export const updateProduct = async (req, res, next) => {
         }
         product.status = req.body.status;
     }
+           
 
-    if (req.file) {
-        if (req.files.mainImage[0]) {
-            await cloudinary.uploader.destroy(product.mainImage.public_id);
-            const { secure_url, public_id } = await cloudinary.uploader.upload(req.files.mainImage[0].path, { folder: `${process.env.APP_NAME}/product/mainImage` });
-            product.mainImage = { secure_url, public_id };
+    if (req.files && req.files.mainImage) {
+        // Access uploaded files via req.files
+        // Destroy the previous main image
+        await cloudinary.uploader.destroy(product.mainImage.public_id);
+     
+        // Upload the new main image
+        const mainImageUpload = await cloudinary.uploader.upload(req.files.mainImage[0].path, { folder: `${process.env.APP_NAME}/product/mainImage` });
+    
+        // Update the product's mainImage property
+        product.mainImage = { secure_url: mainImageUpload.secure_url, public_id: mainImageUpload.public_id };
+    }
+    
+    if (req.files && req.files.subImages) {
+        // Access uploaded files via req.files
+        // Destroy previous sub images
+        for (const file of product.subImages) {
+            await cloudinary.uploader.destroy(file.public_id);
         }
-
-        if (req.files.subImages) {
-            for (const file of product.subImages) {
-                await cloudinary.uploader.destroy(file.public_id);
-            }
-            for (const file of req.files.subImages) {
-                const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, { folder: `${process.env.APP_NAME}/product/subImages` });
-                product.subImages.push({ secure_url, public_id });
-            }
+    
+        // Upload new sub images
+        for (const file of req.files.subImages) {
+            const subImageUpload = await cloudinary.uploader.upload(file.path, { folder: `${process.env.APP_NAME}/product/subImages` });
+            product.subImages.push({ secure_url: subImageUpload.secure_url, public_id: subImageUpload.public_id });
         }
     }
-
-    product.updatedBy = req.user._id;
+    
     const user = await UserModel.findById(req.user._id);
 
     const updatedByUser = {
@@ -337,7 +345,7 @@ export const restoreProduct = async (req, res, next) => {
         image: user.image,
         _id: user._id
     }
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: false, status: 'Active', updatedBy: req.user._id, updatedByUser: updatedByUser }, { new: true });
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: false, status: 'Active', updatedByUser: updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 export const softDeleteProduct = async (req, res, next) => {
@@ -353,7 +361,7 @@ export const softDeleteProduct = async (req, res, next) => {
         image: user.image,
         _id: user._id
     }
-    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive', updatedBy: req.user._id, updatedByUser: updatedByUser }, { new: true });
+    const product = await ProductModel.findByIdAndUpdate(req.params.productId, { isDeleted: true, status: 'Inactive',updatedByUser: updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', product });
 }
 
