@@ -10,7 +10,6 @@ export const signUp = Joi.object(
         phoneNumber: Joi.string().min(10).max(10).required(),
         address: Joi.string().min(10).max(100).required(),
         file: generalFieldValidation.file.required(),
-        gender: Joi.string().valid('Male', 'Female'),
     }
 )
 
