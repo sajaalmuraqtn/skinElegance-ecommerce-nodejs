@@ -98,9 +98,7 @@ export const createProduct = async (req, res, next) => {
         const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, { folder: `${process.env.APP_NAME}/product/subImages` });
         req.body.subImages.push({ secure_url, public_id });
     }
-    req.body.createdBy = req.user._id;
-    req.body.updatedBy = req.user._id;
-
+    
     const user = await UserModel.findById(req.user._id);
     const createdByUser = {
         userName: user.userName,

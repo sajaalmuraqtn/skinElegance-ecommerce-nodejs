@@ -7,7 +7,7 @@ import { customAlphabet, nanoid } from 'nanoid';
 
 export const signUp = async (req, res,next) => {
   
-        const { userName, email, password,phoneNumber,address} = req.body;
+        const {email, password,phoneNumber,address} = req.body;
         if (await UserModel.findOne({ email: email })) {
             return next(new Error("email Already exist",{cause:409}));
          }
@@ -16,17 +16,24 @@ export const signUp = async (req, res,next) => {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: `${process.env.APP_NAME}/User`
         }) 
-
+        let userName='';
+        if (req.body.userName) {
+            userName = req.body.userName.toLowerCase();
+            if (await UserModel.findOne({ userName }).select('userName')) {
+                return next(new Error("userName already exist", { cause: 409 }));
+            }
+        } 
+          
+        const slug = slugify(userName);
         const token = jwt.sign({ email }, process.env.CONFIRMEMAILSECRET);
 
         await sendEmail(email, "confirm Email", `<a href='${req.protocol}://${req.headers.host}/auth/confirmEmail/${token}'>verify</a>`);
 
-        const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id },phoneNumber,address });
+        const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id },slug,phoneNumber,address });
         if (!createUser) {
             return next(new Error(`error while create user `, { cause: 400 }));
         }
         return res.status(201).json({ message: 'success', createUser })
-  
 }
 
 export const confirmEmail = async (req, res,next) => {

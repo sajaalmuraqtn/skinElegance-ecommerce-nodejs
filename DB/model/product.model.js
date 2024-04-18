@@ -51,9 +51,9 @@ const ProductSchema = new Schema({
     expiredDate: {
         type: Date, required: true
     }
-    ,
-    categoryName: { type: String, required: true },
-    subCategoryName: { type: String, required: true }
+    // ,
+    // categoryName: { type: String, required: true },
+    // subCategoryName: { type: String, required: true }
     ,
     isDeleted: {
         type: Boolean, default: false

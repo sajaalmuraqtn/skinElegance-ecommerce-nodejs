@@ -7,7 +7,7 @@ export const createProduct = Joi.object(
         description: Joi.string().min(2).max(150000).required(),
         stock: Joi.number().integer().required(),
         price: Joi.number().positive().required(),
-        size: Joi.number().positive().required(), 
+        size: Joi.number().positive(), 
         discount: Joi.number().positive().min(1),
         file: Joi.object({
             mainImage: Joi.array().items(generalFieldValidation.file.required()).length(1),

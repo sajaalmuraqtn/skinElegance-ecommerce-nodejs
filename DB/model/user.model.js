@@ -4,8 +4,16 @@ const UserSchema = new Schema({
     userName: {
         type: String,
         required: true,
+        unique:true,
         min: 4,
-        max: 20
+        max: 20,
+    },
+    slug: {
+        type: String,
+        required: true,
+        unique:true,
+        min: 4,
+        max: 20,
     },
     email: {
         type: String,
@@ -36,10 +44,6 @@ const UserSchema = new Schema({
         required: true,
     }
     ,
-    gender: {
-        type: String,
-        enum: ['Male', 'Female']
-    },
     status: {
         type: String,
         enum: ['Active', 'Inactive']
