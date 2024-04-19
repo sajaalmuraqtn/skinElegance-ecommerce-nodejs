@@ -20,7 +20,7 @@ export const auth = (accessRoles = []) => {
                 return next(new Error("invalid authorization", { cause: 400 }));
             }
 
-            const user = await UserModel.findById(decoded.id).select('userName image role changePasswordTime');
+            const user = await UserModel.findById(decoded.id).select('userName role changePasswordTime');
 
             if (!user) {
                 return next(new Error("not registered user", { cause: 404 }));
