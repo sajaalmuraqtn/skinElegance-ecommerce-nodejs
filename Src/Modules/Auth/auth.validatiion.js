@@ -9,7 +9,7 @@ export const signUp = Joi.object(
         confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
         phoneNumber: Joi.string().min(10).max(10).required(),
         address: Joi.string().min(10).max(100).required(),
-        image: generalFieldValidation.file,
+        file: generalFieldValidation.file,
     }
 )
 

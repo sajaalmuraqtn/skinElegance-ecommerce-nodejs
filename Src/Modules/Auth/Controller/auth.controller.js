@@ -4,6 +4,7 @@ import UserModel from '../../../../DB/model/user.model.js'
 import cloudinary from '../../../Services/cloudinary.js';
 import { sendEmail } from '../../../Services/email.js';
 import { customAlphabet, nanoid } from 'nanoid';
+import slugify from 'slugify';
 
 export const signUp = async (req, res,next) => {
   

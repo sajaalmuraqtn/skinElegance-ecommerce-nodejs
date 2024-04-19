@@ -12,8 +12,13 @@ export const updateProfile=async(req,res,next)=>{
     const user=await UserModel.findById(req.user._id);
 
     if (req.body.userName) {
-        user.userName=req.body.userName;
-    }
+        if (await UserModel.findOne({ userName:req.body.userName.toLowerCase()}).select('userName')) {
+            return next(new Error("userName already exist", { cause: 409 }));
+        }
+        user.userName=req.body.userName.toLowerCase();
+        user.slug = slugify(userName);
+    } 
+      
 
     if (req.body.phoneNumber) {
         user.phoneNumber=req.body.phoneNumber;
@@ -23,10 +28,7 @@ export const updateProfile=async(req,res,next)=>{
         user.phoneNumber=req.body.address;
     }
     
-    if (req.body.gender) {
-        user.gender=req.body.gender;
-    } 
-     
+    
     if (req.file) {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
             folder: `${process.env.APP_NAME}/User`
