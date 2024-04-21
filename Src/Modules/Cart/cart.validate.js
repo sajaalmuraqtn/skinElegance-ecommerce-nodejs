@@ -3,7 +3,7 @@ import { generalFieldValidation } from "../../Middleware/validation.js"
 
 export const createCart = Joi.object(
     { 
-        quantity: Joi.number().integer().positive().required(),  
+        quantity: Joi.number().integer().positive(),  
         productId: Joi.string().required().min(24).max(24) 
      }
 )
