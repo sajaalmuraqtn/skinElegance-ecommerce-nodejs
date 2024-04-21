@@ -7,11 +7,10 @@ export const createCart = async (req, res, next) => {
     if (!product) {
         return next(new Error("product not found", { cause: 404 }));
     }
-    console.log(product);
     products.price = product.finalPrice * products.quantity;
     products.mainImage=product.mainImage;
     products.productName=product.name;
-    console.log(products);
+    products.productSlug=product.slug;
 
     const cart = await CartModel.findOne({ userId: req.user._id });
     if (!cart) {
@@ -29,7 +28,6 @@ export const createCart = async (req, res, next) => {
             products.quantity= cart.products[index].quantity+products.quantity;
             cart.products[index].quantity = products.quantity;
             cart.products[index].price = products.price * products.quantity;
-            cart.products[index].productName = products.productName;
             matched = true;
             break;
         }

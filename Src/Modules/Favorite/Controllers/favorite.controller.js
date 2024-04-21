@@ -7,10 +7,12 @@ export const createFavorite = async (req, res, next) => {
     if (!product) {
         return next(new Error("product not found", { cause: 404 }));
     }
-     products.price = product.finalPrice;
-     products.mainImage = product.mainImage;
-     products.productName = product.name;
- 
+    products.price = product.finalPrice;
+    products.mainImage = product.mainImage;
+    products.productName = product.name;
+    products.productSlug = product.slug;
+
+
     const Favorite = await FavoriteModel.findOne({ userId: req.user._id });
     if (!Favorite) {
         const newFavorite = await FavoriteModel.create({
@@ -35,11 +37,11 @@ export const createFavorite = async (req, res, next) => {
 export const removeItem = async (req, res, next) => {
     const { productId } = req.body;
     const Favorite = await FavoriteModel.findOne({ userId: req.user._id });
-    if (!Favorite || Favorite.products.length==0) {
-    return next(new Error(" your favorite list is empty", { cause: 409 }));  
+    if (!Favorite || Favorite.products.length == 0) {
+        return next(new Error(" your favorite list is empty", { cause: 409 }));
     }
     let matched = false;
-     for (let index = 0; index < Favorite.products.length; index++) {
+    for (let index = 0; index < Favorite.products.length; index++) {
         if (Favorite.products[index].productId == productId) {
             console.log(Favorite.products[index].productId);
             console.log(matched);
@@ -47,16 +49,16 @@ export const removeItem = async (req, res, next) => {
             break;
         }
     }
-     if ( matched) {
+    if (matched) {
         const updateFavorite = await FavoriteModel.findOneAndUpdate({ userId: req.user._id }, {
             $pull:
             {
                 products: { productId }
             },
         }, { new: true });
-        return res.status(201).json({ message: 'success', updateFavorite }); 
-    } 
-    return next(new Error("product not exist in your favorite list", { cause: 409 })); 
+        return res.status(201).json({ message: 'success', updateFavorite });
+    }
+    return next(new Error("product not exist in your favorite list", { cause: 409 }));
 }
 
 export const clearFavorite = async (req, res, next) => {
