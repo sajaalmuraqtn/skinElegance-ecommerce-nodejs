@@ -7,10 +7,14 @@ export const createCart = async (req, res, next) => {
     if (!product) {
         return next(new Error("product not found", { cause: 404 }));
     }
-    products.price = product.finalPrice * products.quantity;
-    products.mainImage=product.mainImage;
-    products.productName=product.name;
-    products.productSlug=product.slug;
+    if (products.quantity) {
+        products.price = product.finalPrice * products.quantity;
+    } else {
+        products.price = product.finalPrice;
+    }
+    products.mainImage = product.mainImage;
+    products.productName = product.name;
+    products.productSlug = product.slug;
 
     const cart = await CartModel.findOne({ userId: req.user._id });
     if (!cart) {
@@ -25,7 +29,7 @@ export const createCart = async (req, res, next) => {
     let matched = false;
     for (let index = 0; index < cart.products.length; index++) {
         if (cart.products[index].productId == products.productId) {
-            products.quantity= cart.products[index].quantity+products.quantity;
+            products.quantity = cart.products[index].quantity + products.quantity;
             cart.products[index].quantity = products.quantity;
             cart.products[index].price = products.price * products.quantity;
             matched = true;
@@ -39,7 +43,7 @@ export const createCart = async (req, res, next) => {
     for (let index = 0; index < cart.products.length; index++) {
         totalPrice = totalPrice + cart.products[index].price;
     }
-    cart.totalPrice = totalPrice; 
+    cart.totalPrice = totalPrice;
     await cart.save();
     return res.status(201).json({ message: 'success', cart });
 
@@ -52,14 +56,14 @@ export const removeItem = async (req, res, next) => {
         {
             products: { productId }
         },
-    },{new:true});
+    }, { new: true });
     let totalPrice = 0;
     for (let index = 0; index < cart.products.length; index++) {
         totalPrice = totalPrice + cart.products[index].price;
     }
-    cart.totalPrice = totalPrice; 
-    await cart.save();   
- 
+    cart.totalPrice = totalPrice;
+    await cart.save();
+
     return res.status(201).json({ message: 'success', cart });
 }
 
@@ -69,8 +73,8 @@ export const clearCart = async (req, res, next) => {
     for (let index = 0; index < cart.products.length; index++) {
         totalPrice = totalPrice + cart.products[index].price;
     }
-    cart.totalPrice = totalPrice; 
-    await cart.save();   
+    cart.totalPrice = totalPrice;
+    await cart.save();
 
     return res.status(200).json({ message: 'success', cart });
 }
