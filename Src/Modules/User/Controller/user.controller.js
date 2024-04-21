@@ -26,7 +26,7 @@ export const updateProfile=async(req,res,next)=>{
     }
 
     if (req.body.address) {
-        user.phoneNumber=req.body.address;
+        user.address=req.body.address;
     }
     
     
