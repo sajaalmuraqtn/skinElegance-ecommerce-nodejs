@@ -60,7 +60,7 @@ export const removeItem = async (req, res, next) => {
 }
 
 export const clearFavorite = async (req, res, next) => {
-    const Favorite = await FavoriteModel.findOneAndUpdate({ userId: req.user._id }, { products: [] }, { new: true });
+    const Favorite = await FavoriteModel.findOneAndDelete({ userId: req.user._id });
 
     return res.status(200).json({ message: 'success', Favorite });
 }
