@@ -1,3 +1,4 @@
+import slugify from "slugify";
 import UserModel from "../../../../DB/model/user.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
 import { pagination } from "../../../Services/pagination.js";

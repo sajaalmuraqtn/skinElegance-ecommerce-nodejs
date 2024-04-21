@@ -8,7 +8,6 @@ export const updateProfile = Joi.object(
         phoneNumber: Joi.string().min(10).max(10),
         address: Joi.string().min(10).max(100),
         file: generalFieldValidation.file,
-        gender: Joi.string().valid('Male', 'Female'),
     }
 )
 
