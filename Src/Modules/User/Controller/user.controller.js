@@ -17,7 +17,7 @@ export const updateProfile=async(req,res,next)=>{
             return next(new Error("userName already exist", { cause: 409 }));
         }
         user.userName=req.body.userName.toLowerCase();
-        user.slug = slugify(userName);
+        user.slug = slugify(user.userName);
     } 
       
 
