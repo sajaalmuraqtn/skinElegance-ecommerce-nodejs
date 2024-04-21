@@ -8,7 +8,8 @@ export const createFavorite = async (req, res, next) => {
         return next(new Error("product not found", { cause: 404 }));
     }
      products.price = product.finalPrice;
-    products.mainImage = product.mainImage;
+     products.mainImage = product.mainImage;
+     products.productName = product.name;
  
     const Favorite = await FavoriteModel.findOne({ userId: req.user._id });
     if (!Favorite) {

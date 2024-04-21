@@ -10,6 +10,7 @@ export const createCart = async (req, res, next) => {
     console.log(product);
     products.price = product.finalPrice * products.quantity;
     products.mainImage=product.mainImage;
+    products.productName=product.name;
     console.log(products);
 
     const cart = await CartModel.findOne({ userId: req.user._id });
@@ -17,8 +18,7 @@ export const createCart = async (req, res, next) => {
         const newCart = await CartModel.create({
             userId: req.user._id,
             products,
-            totalPrice: products.price,
-            mainImage:products.mainImage
+            totalPrice: products.price
         });
         return res.status(201).json({ message: 'success', newCart });
     }
@@ -29,6 +29,7 @@ export const createCart = async (req, res, next) => {
             products.quantity= cart.products[index].quantity+products.quantity;
             cart.products[index].quantity = products.quantity;
             cart.products[index].price = products.price * products.quantity;
+            cart.products[index].productName = products.productName;
             matched = true;
             break;
         }
