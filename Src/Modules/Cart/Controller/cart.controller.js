@@ -70,10 +70,7 @@ export const removeItem = async (req, res, next) => {
 export const clearCart = async (req, res, next) => {
     const cart = await CartModel.findOneAndUpdate({ userId: req.user._id }, { products: [] });
     let totalPrice = 0;
-    for (let index = 0; index < cart.products.length; index++) {
-        totalPrice = totalPrice + cart.products[index].price;
-    }
-    cart.totalPrice = totalPrice;
+    cart.totalPrice = 0;
     await cart.save();
 
     return res.status(200).json({ message: 'success', cart });
