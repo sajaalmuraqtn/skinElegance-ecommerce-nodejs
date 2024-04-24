@@ -15,7 +15,7 @@ export const createCart = async (req, res, next) => {
     // Check if quantity is provided and is a valid number
     if (products.quantity && !isNaN(products.quantity)) {
         quantity = parseInt(products.quantity);
-        price *= quantity;
+        price =price* quantity;
     }
 
     // Create cart item object
@@ -44,8 +44,8 @@ export const createCart = async (req, res, next) => {
     // Check if the product already exists in the cart
     for (let index = 0; index < cart.products.length; index++) {
         if (cart.products[index].productId == products.productId) {
-            cart.products[index].quantity += quantity;
-            cart.products[index].price += price;
+            cart.products[index].quantity = quantity;
+            cart.products[index].price =price
             matched = true;
             break;
         }
