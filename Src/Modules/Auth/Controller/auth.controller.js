@@ -63,10 +63,8 @@ export const sendCode = async (req, res,next) => {
     
     const html=`<h2>reset code : ${code}</h2>`
     sendEmail(email,'reset Password',html);
-    const user = await UserModel.findOneAndUpdate({email},{sendCode:code},{new:true});
-    return res.redirect(process.env.FORGOTPASSWORDFORM)
-    
-    // return res.status(200).json({ message: 'success', user})
+    const user = await UserModel.findOneAndUpdate({email},{sendCode:code},{new:true});    
+    return res.status(200).json({ message: 'success'});
 }
 
 export const changePassword  = async (req, res,next) => {

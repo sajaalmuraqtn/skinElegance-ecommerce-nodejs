@@ -28,8 +28,10 @@ export const adminSignIn = Joi.object(
 
 export const forgotPassword = Joi.object(
     {
+        email: generalFieldValidation.email.required(),
         password: generalFieldValidation.password.required(),
-        confirmPassword: Joi.string().valid(Joi.ref('password')).required()
+        confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
+        code:Joi.string()
     }
 )
 
