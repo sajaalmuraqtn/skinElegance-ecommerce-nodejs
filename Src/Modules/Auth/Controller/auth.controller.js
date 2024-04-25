@@ -99,8 +99,9 @@ export const changePassword  = async (req, res,next) => {
     // Save the updated user
     await user.save();
 
-    return res.status(200).json({ message: 'success', user });
+    return res.status(200).json({ message: 'success'});
 }
+
 export const forgotPassword = async (req, res,next) => {
     const { email,password,confirmPassword,code} = req.body;
     const user = await UserModel.findOne({ email: email })
@@ -122,7 +123,7 @@ export const forgotPassword = async (req, res,next) => {
     user.sendCode=null;
     user.changePasswordTime=Date.now();
     user.save();
-    return res.status(200).json({ message: 'success', user})
+    return res.status(200).json({ message: 'success'})
 }
 
 
