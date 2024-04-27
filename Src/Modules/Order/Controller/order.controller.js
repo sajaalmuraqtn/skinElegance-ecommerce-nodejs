@@ -3,23 +3,18 @@ import CouponModel from "../../../../DB/model/coupon.model.js";
 import OrderModel from "../../../../DB/model/order.model.js";
 import ProductModel from "../../../../DB/model/product.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
-import { asyncHandler } from "../../../Services/errorHandling.js";
 
 export const createOrder = async (req, res, next) => {
-
-    const { couponName } = req.body;
-
     const cart = await CartModel.findOne({ userId: req.user._id }); 
     if (!cart) {
         return next(new Error("cart is Empty", { cause: 400 }))
     }
-    console.log(cart.products.length);
     if (cart.products.length == 0) {
         return next(new Error("cart is Empty", { cause: 400 }))
     }
     req.body.products = cart.products;
  
-    if (couponName) {
+    if (req.body.couponName) {
         const coupon = await CouponModel.findOne({ name: couponName.toLowerCase() });
         if (!coupon) {
             return next(new Error("coupon not found", { cause: 404 }));
@@ -71,7 +66,10 @@ export const createOrder = async (req, res, next) => {
         finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
         address: req.body.address,
         phoneNumber: req.body.phoneNumber,
-        couponName: req.body.couponName ?? ''
+        couponName: req.body.couponName ?? '',
+        city: req.body.city,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName
     })
     if (req.body.coupon) {
         await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })

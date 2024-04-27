@@ -18,15 +18,27 @@ const OrderSchema=new Schema({
     finalPrice:{
         type: Number, required:true
      },
+     city:{
+        type:String,
+        enum:['Hebron','Nablus','Jerusalem','Ramallah','Tulkarm',"Jenin","Al-Bireh","Jericho","Yatta","Beit Jala"]
+        ,required:true
+     },
+     firstName:{
+         type:String,required:true
+     },
+     lastName:{
+         type:String,required:true
+     },
      address:{
-        type:String,required:true
+        type:String,
+        required:true   
      },
      phoneNumber:{
         type:String,required:true
      },
     couponName:{
         type:String, 
-        required:true
+        default:''
     },
     paymentType:{
         type:String, default:'cash'
