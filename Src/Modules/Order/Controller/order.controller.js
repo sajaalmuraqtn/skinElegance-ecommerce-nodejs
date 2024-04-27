@@ -60,6 +60,9 @@ export const createOrder = async (req, res, next) => {
     if (!req.body.phoneNumber) {
         req.body.phoneNumber = user.phoneNumber;
     }
+    if (req.body.note) {
+        req.body.note = user.phoneNumber;
+    }
     const order = await OrderModel.create({
         userId: req.user._id,
         products: finalProductList,
@@ -69,7 +72,8 @@ export const createOrder = async (req, res, next) => {
         couponName: req.body.couponName ?? '',
         city: req.body.city,
         firstName: req.body.firstName,
-        lastName: req.body.lastName
+        lastName: req.body.lastName,
+        note: req.body.note?? ''
     })
     if (req.body.coupon) {
         await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })
