@@ -7,6 +7,7 @@ const OrderSchema=new Schema({
     },products:[{
         productId:{type:Types.ObjectId,ref:'Product',required:true},
         name:{type:String,required:true}, 
+        slug:{type:String,required:true}, 
         quantity:{type:Number,default:1,required:true},
         unitPrice:{type:Number,required:true},
         discount:{type:Number,required:true},

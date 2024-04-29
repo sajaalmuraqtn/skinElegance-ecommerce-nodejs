@@ -43,6 +43,7 @@ export const createOrder = async (req, res, next) => {
         }
         product = product.toObject();
         product.name = checkProduct.name;
+        product.slug = checkProduct.slug;
         product.unitPrice = checkProduct.price;
         product.discount = checkProduct.discount;
         product.finalPrice = product.quantity * checkProduct.finalPrice;
