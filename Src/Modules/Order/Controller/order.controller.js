@@ -15,7 +15,7 @@ export const createOrder = async (req, res, next) => {
     req.body.products = cart.products;
  
     if (req.body.couponName) {
-        const coupon = await CouponModel.findOne({ name: couponName.toLowerCase() });
+        const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         if (!coupon) {
             return next(new Error("coupon not found", { cause: 404 }));
         }
@@ -28,7 +28,6 @@ export const createOrder = async (req, res, next) => {
         if (coupon.usedBy.includes(req.user._id)) {
             return next(new Error(" coupon already used", { cause: 400 })); 
         }
-        req.body.coupon = coupon;
     }
 
     let subTotals = 0;
