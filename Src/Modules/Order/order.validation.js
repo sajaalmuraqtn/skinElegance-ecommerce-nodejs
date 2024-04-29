@@ -2,8 +2,8 @@ import Joi from "joi"
  
 export const createOrder= Joi.object(
     {
-        firstName:Joi.string().min(3).max(30).required(),
-        lastName:Joi.string().min(3).max(30).required(),
+        firstName:Joi.string().min(3).max(30),
+        lastName:Joi.string().min(3).max(30),
         couponName: Joi.string().min(3).max(30), 
         phoneNumber: Joi.string().min(10).max(10),
         note: Joi.string().min(10).max(100),
