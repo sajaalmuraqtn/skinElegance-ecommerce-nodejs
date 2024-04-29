@@ -9,6 +9,7 @@ const OrderSchema=new Schema({
         name:{type:String,required:true}, 
         quantity:{type:Number,default:1,required:true},
         unitPrice:{type:Number,required:true},
+        discount:{type:Number,required:true},
         finalPrice:{type:Number,required:true}
     }],
      contacts:[{

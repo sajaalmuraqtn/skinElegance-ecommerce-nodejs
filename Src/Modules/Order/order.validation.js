@@ -2,13 +2,13 @@ import Joi from "joi"
  
 export const createOrder= Joi.object(
     {
-        firstName:Joi.string().min(3).max(30),
-        lastName:Joi.string().min(3).max(30),
+        firstName:Joi.string().min(3).max(30).required(),
+        lastName:Joi.string().min(3).max(30).required(),
         couponName: Joi.string().min(3).max(30), 
         phoneNumber: Joi.string().min(10).max(10),
         note: Joi.string().min(10).max(100),
         address: Joi.string().min(10).max(100),
-        city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala'),
+        city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala').required()
      }
    )
 
