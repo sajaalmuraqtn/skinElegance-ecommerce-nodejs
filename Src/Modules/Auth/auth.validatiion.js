@@ -1,6 +1,17 @@
 import Joi from "joi"
 import { generalFieldValidation } from "../../Middleware/validation.js"
 
+export const AddAdminAccount = Joi.object(
+    {
+        userName: Joi.string().min(4).max(30).required(),
+        email: generalFieldValidation.email,
+        password: generalFieldValidation.password.required(),
+        confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
+        phoneNumber: Joi.string().min(10).max(10).required(),
+        file: generalFieldValidation.file.required(),
+    }
+)
+
 export const signUp = Joi.object(
     {
         userName: Joi.string().min(4).max(30).required(),

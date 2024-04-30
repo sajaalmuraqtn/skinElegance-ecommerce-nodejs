@@ -3,9 +3,10 @@ import CouponModel from "../../../../DB/model/coupon.model.js";
 import OrderModel from "../../../../DB/model/order.model.js";
 import ProductModel from "../../../../DB/model/product.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
+import moment from 'moment';
 
 export const createOrder = async (req, res, next) => {
-    const cart = await CartModel.findOne({ userId: req.user._id }); 
+    const cart = await CartModel.findOne({ userId: req.user._id });
     if (!cart) {
         return next(new Error("cart is Empty", { cause: 400 }))
     }
@@ -13,7 +14,7 @@ export const createOrder = async (req, res, next) => {
         return next(new Error("cart is Empty", { cause: 400 }))
     }
     req.body.products = cart.products;
- 
+
     if (req.body.couponName) {
         const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         if (!coupon) {
@@ -22,11 +23,11 @@ export const createOrder = async (req, res, next) => {
         const currentDate = new Date();
 
         if (coupon.expiredDate <= currentDate) {
-            return next(new Error("this coupon has expired", { cause: 400 })); 
+            return next(new Error("this coupon has expired", { cause: 400 }));
         }
 
         if (coupon.usedBy.includes(req.user._id)) {
-            return next(new Error(" coupon already used", { cause: 400 })); 
+            return next(new Error(" coupon already used", { cause: 400 }));
         }
     }
 
@@ -73,7 +74,7 @@ export const createOrder = async (req, res, next) => {
         city: req.body.city,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        note: req.body.note?? ''
+        note: req.body.note ?? ''
     })
     if (req.body.coupon) {
         await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })
@@ -83,15 +84,15 @@ export const createOrder = async (req, res, next) => {
     }
     await CartModel.updateOne({ userId: req.user._id }, {
         products: [],
-        totalPrice:0
+        totalPrice: 0
     })
 
-    return res.status(201).json({ message: 'success', order }); 
+    return res.status(201).json({ message: 'success', order });
 }
 
 export const getAllOrders = async (req, res, next) => {
-    
-    const orders = await OrderModel.find( ); 
+
+    const orders = await OrderModel.find();
     return res.status(201).json({ message: "success", orders });
 }
 
@@ -111,42 +112,140 @@ export const getSpecificOrder = async (req, res, next) => {
     return res.status(201).json({ message: "success", order });
 }
 
-export const updateOrder = async (req, res, next) => {
-    const orderId = req.params.orderId; 
+export const updateStatusOrder = async (req, res, next) => {
+    const orderId = req.params.orderId;
     const order = await OrderModel.findById(orderId);
     if (!order) {
         return next(new Error(`order not found`, { cause: 404 }));
     }
+    'pending','cancelled','confirmed','onWay','delivered'
+
     if (order.status == 'cancelled' || order.status == 'delivered') {
-        return next(new Error(` can not cancelled this order `, { cause: 404 }));
+        return next(new Error(` can not change status this order `, { cause: 404 }));
     }
-    const newOrder = await OrderModel.findByIdAndUpdate(orderId, { status: req.body.status, updatedBy: req.user._id }, { new: true });
- 
-    if (req.body.phoneNumber) {
-        await CouponModel.updateOne({ name: order.couponName }, { $push: { contacts:req.body.phoneNumber } })
+
+    if (order.status !== 'confirmed' && req.body.status== 'onWay') {
+        return next(new Error(` can not change status its should be confirmed `, { cause: 404 }));
     }
+
+    if (order.status !== 'onWay' && req.body.status == 'delivered') {
+        return next(new Error(` can not change status its should be onWay `, { cause: 404 }));
+    } 
+    const user =await UserModel.findById(req.user._id);
+    
+    req.body.updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
+    const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
     return res.status(201).json({ message: "success", order: newOrder });
 }
 
+export const addContactsOrder = async (req, res, next) => {
+    const orderId = req.params.orderId;
+    try {
+        const order = await OrderModel.findById(orderId);
+        if (!order) {
+            return next(new Error(`Order not found`, { cause: 404 }));
+        }
+        
+        const user = await UserModel.findById(req.user._id);
+
+        order.updatedByUser = {
+            userName: user.userName,
+            image: user.image,
+            _id: user._id
+        };
+
+        // Push new contact object into the contacts array
+        order.contacts.push(req.body);
+
+        // Save the updated order document
+        await order.save();
+
+        return res.status(201).json({ message: "Success", order });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+
 export const cancelOrder = async (req, res, next) => {
     const orderId = req.params.orderId;
-    const order = await OrderModel.findOne({ _id: orderId, userId: req.user._id });
+    const order = await OrderModel.findOne({ _id: orderId});
 
     if (!order) {
-        return next(new Error(` invalid order `, { cause: 404 }));
+        return next(new Error(`Invalid order`, { cause: 404 }));
     }
 
-    if (order.status != 'pending') {
-        return next(new Error(` can not cancel order `, { cause: 404 }));
+    // Calculate the difference in days between the current time and the order's creation time
+    const orderCreationTime = moment(order.createdAt);
+    const currentTime = moment();
+    const daysDifference = currentTime.diff(orderCreationTime, 'days');
+
+    // Check if the order is older than 3 days
+    if (daysDifference > 3) {
+        return next(new Error(`Cannot cancel order: more than 3 days have passed since its creation`, { cause: 403 }));
     }
+
+    if (order.status !== 'pending') {
+        return next(new Error(`Cannot cancel order: order status is not pending`, { cause: 403 }));
+    }
+
     req.body.status = 'cancelled';
-    req.body.updatedBy = req.user._id;
+
+    const user =await UserModel.findById(req.user._id);
+
+    req.body.updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
+
     for (const product of order.products) {
-        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: product.quantity } })
+        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: product.quantity } });
     }
+
     if (order.couponName) {
-        await CouponModel.updateOne({ name: order.couponName }, { $pull: { usedBy: req.user._id } })
+        await CouponModel.updateOne({ name: order.couponName }, { $pull: { usedBy: req.user._id } });
     }
+
     const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
-    return res.status(201).json({ message: "success", newOrder });
-} 
+    return res.status(200).json({ message: "Order canceled successfully", newOrder });
+}
+
+
+export const confirmOrder = async (req, res, next) => {
+    const orderId = req.params.orderId;
+    const order = await OrderModel.findOne({ _id: orderId});
+
+    if (!order) {
+        return next(new Error(`Invalid order`, { cause: 404 }));
+    }
+
+    // Calculate the difference in days between the current time and the order's creation time
+    const orderCreationTime = moment(order.createdAt);
+    const currentTime = moment();
+    const daysDifference = currentTime.diff(orderCreationTime, 'days');
+
+    // Check if the order is older than 3 days
+    if (daysDifference < 3) {
+        return next(new Error(`Cannot confirm order: less than 3 days have passed since its creation`, { cause: 403 }));
+    }
+
+    if (order.status !== 'cancelled') {
+        return next(new Error(`Cannot confirm order: order status is not pending`, { cause: 403 }));
+    }
+
+    req.body.status = 'confirmed';
+    const user =await UserModel.findById(req.user._id);
+
+    req.body.updatedByUser={
+        userName:user.userName,
+        image:user.image,
+        _id:user._id
+    } 
+    const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
+    return res.status(200).json({ message: "Order canceled successfully", newOrder });
+}

@@ -1,4 +1,5 @@
 import Joi from "joi"
+import { generalFieldValidation } from "../../Middleware/validation.js"
  
 export const createOrder= Joi.object(
     {
@@ -12,18 +13,31 @@ export const createOrder= Joi.object(
      }
    )
 
-export const updateOrder= Joi.object(
+
+export const addContactsOrder= Joi.object(
     {
-        couponName: Joi.string().min(3).max(30).required(), 
-        phoneNumber: Joi.string().min(10).max(10) , 
-        status: Joi.string().valid( 'confirmed','onWay','delivered'),  
-     }
-   )
+        orderId:Joi.string().required().min(24).max(24),
+        adminPhoneNumber: Joi.string().min(10).max(10).required() , 
+        adminEmail:generalFieldValidation.email, 
+    }
+)
+
+export const updateStatusOrder= Joi.object(
+    {
+        orderId:Joi.string().required().min(24).max(24),
+        status: Joi.string().valid('onWay','delivered').required(),  
+    }
+)
 
 export const cancelOrder = Joi.object(
     { 
         orderId:Joi.string().required().min(24).max(24),
         reasonRejected:Joi.string().required().min(24).max(50) 
+    }
+   )
+export const confirmOrder = Joi.object(
+    { 
+        orderId:Joi.string().required().min(24).max(24)
     }
    )
 

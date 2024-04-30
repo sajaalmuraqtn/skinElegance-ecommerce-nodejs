@@ -14,8 +14,8 @@ const OrderSchema=new Schema({
         finalPrice:{type:Number,required:true}
     }],
      contacts:[{
-        type:Types.ObjectId,ref:'User' ,
-        phoneNumber:String
+        adminPhoneNumber:{type:String,unique: true}
+     , adminEmail: {type:String,unique: true }
     }],
     finalPrice:{
         type: Number, required:true

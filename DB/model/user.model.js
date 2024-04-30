@@ -29,12 +29,10 @@ const UserSchema = new Schema({
         required: true
     },
     address: {
-        type: String,
-        required: true 
+        type: String
     },
     phoneNumber: {
         type: String,
-        required: true,
         trim: true,
         min: 10,
         max: 10 

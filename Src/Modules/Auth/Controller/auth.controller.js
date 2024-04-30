@@ -37,6 +37,35 @@ export const signUp = async (req, res,next) => {
         return res.status(201).json({ message: 'success', createUser })
 }
 
+
+export const AddAdminAccount = async (req, res,next) => {
+  
+        const {email, password,phoneNumber} = req.body;
+        if (await UserModel.findOne({ email: email })) {
+            return next(new Error("email Already exist",{cause:409}));
+         }
+        const hashPassword = await bcrypt.hashSync(password, parseInt(process.env.SALTROUND));
+      
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: `${process.env.APP_NAME}/User`
+        }) 
+        let userName='';
+        if (req.body.userName) {
+            userName = req.body.userName.toLowerCase();
+            if (await UserModel.findOne({ userName }).select('userName')) {
+                return next(new Error("userName already exist", { cause: 409 }));
+            }
+        } 
+          
+        const slug = slugify(userName);
+
+        const createAdminUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id },confirmEmail:true,slug,phoneNumber,role:'Admin'});
+        if (!createAdminUser) {
+            return next(new Error(`error while create admin `, { cause: 400 }));
+        }
+        return res.status(201).json({ message: 'success', createAdminUser })
+}
+
 export const confirmEmail = async (req, res,next) => {
     const token = req.params.token;
     const decoded = await jwt.verify(token, process.env.CONFIRMEMAILSECRET);
