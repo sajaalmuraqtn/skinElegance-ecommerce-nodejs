@@ -19,6 +19,7 @@ const ReviewsSchema=new Schema({
         _id: { type: Types.ObjectId, ref: 'User',required:true},
         userName: String
     },
+    createdBy:{ type: Types.ObjectId, ref: 'User',required:true}
 },{
     timestamps:true
 })
