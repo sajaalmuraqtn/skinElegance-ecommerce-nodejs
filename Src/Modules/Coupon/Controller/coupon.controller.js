@@ -1,6 +1,7 @@
 import CouponModel from "../../../../DB/model/coupon.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
+import { pagination } from "../../../Services/pagination.js";
 
 export const CreateCoupon = async (req, res, next) => {
   req.body.name = req.body.name.toLowerCase();
@@ -42,12 +43,46 @@ export const GetSpecificCoupons = async (req, res, next) => {
 }
 
 export const GetAllCoupons = async (req, res, next) => {
-  const coupons = await CouponModel.find();
-  return res.status(200).json({ message: 'success', coupons });
+  const { limit, skip } = pagination(req.query.page, req.query.limit);
+
+  let queryObj = { ...req.query };
+  const execQuery = ['page', 'limit', 'skip', 'sort'];
+  execQuery.map((ele) => {
+      delete queryObj[ele];
+  })
+  queryObj = JSON.stringify(queryObj);
+  queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
+  queryObj = JSON.parse(queryObj);
+
+  const mongooseQuery = CouponModel.find(queryObj).limit(limit).skip(skip);
+
+  if (req.query.fields) {
+      mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
+  }
+
+  const coupons = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' '));
+    return res.status(200).json({ message: 'success', coupons });
 }
 
 export const getActiveCoupons = async (req, res, next) => {
-  const coupons = await CouponModel.find({ isDeleted: false });
+  const { limit, skip } = pagination(req.query.page, req.query.limit);
+
+  let queryObj = { ...req.query };
+  const execQuery = ['page', 'limit', 'skip', 'sort'];
+  execQuery.map((ele) => {
+      delete queryObj[ele];
+  })
+  queryObj = JSON.stringify(queryObj);
+  queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
+  queryObj = JSON.parse(queryObj);
+
+  const mongooseQuery = CouponModel.find(queryObj).limit(limit).skip(skip);
+
+  if (req.query.fields) {
+      mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
+  }
+
+  const coupons = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ isDeleted: false });
   return res.status(200).json({ message: 'success', coupons });
 }
 

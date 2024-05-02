@@ -31,10 +31,10 @@ const CategorySchema = new Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 })
-CategorySchema.virtual('subCategories', {
+CategorySchema.virtual('Products', {
     localField: '_id',
     foreignField: 'categoryId',
-    ref: 'SubCategory'
+    ref: 'Product'
 });
 const CategoryModel = mongoose.models.Category || model('Category', CategorySchema);
 export default CategoryModel;

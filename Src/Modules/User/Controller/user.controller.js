@@ -45,8 +45,24 @@ export const updateProfile=async(req,res,next)=>{
 
 export const getAllUsers = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
-    const users = await UserModel.find({role:'User'}).limit(limit).skip(skip);
-    return res.status(201).json({ message: 'success', users })
+
+    let queryObj = { ...req.query };
+    const execQuery = ['page', 'limit', 'skip', 'sort'];
+    execQuery.map((ele) => {
+        delete queryObj[ele];
+    })
+    queryObj = JSON.stringify(queryObj);
+    queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
+    queryObj = JSON.parse(queryObj);
+  
+    const mongooseQuery = UserModel.find(queryObj).limit(limit).skip(skip);
+  
+    if (req.query.fields) {
+        mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
+    }
+  
+    const users = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({role:'User'});
+    return res.status(201).json({ message: 'success', users });
 }
 
 export const getSpecificUser = async (req, res, next) => {

@@ -51,19 +51,15 @@ const ProductSchema = new Schema({
     expiredDate: {
         type: Date, required: true
     }
-    // ,
-    // categoryName: { type: String, required: true },
-    // subCategoryName: { type: String, required: true }
     ,
+    categoryName: { type: String, required: true },
     isDeleted: {
         type: Boolean, default: false
     },
     categoryId: {
         type: Types.ObjectId, ref: 'Category', required: true
     }
-    , subCategoryId: {
-        type: Types.ObjectId, ref: 'SubCategory', required: true
-    }
+  
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

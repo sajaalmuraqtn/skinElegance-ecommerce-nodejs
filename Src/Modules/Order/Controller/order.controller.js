@@ -4,6 +4,7 @@ import OrderModel from "../../../../DB/model/order.model.js";
 import ProductModel from "../../../../DB/model/product.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import moment from 'moment';
+import { pagination } from "../../../Services/pagination.js";
 
 export const createOrder = async (req, res, next) => {
     const cart = await CartModel.findOne({ userId: req.user._id });
@@ -91,13 +92,46 @@ export const createOrder = async (req, res, next) => {
 }
 
 export const getAllOrders = async (req, res, next) => {
+    const { limit, skip } = pagination(req.query.page, req.query.limit);
 
-    const orders = await OrderModel.find();
+    let queryObj = { ...req.query };
+    const execQuery = ['page', 'limit', 'skip', 'sort'];
+    execQuery.map((ele) => {
+        delete queryObj[ele];
+    })
+    queryObj = JSON.stringify(queryObj);
+    queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
+    queryObj = JSON.parse(queryObj);
+
+    const mongooseQuery = OrderModel.find(queryObj).limit(limit).skip(skip);
+
+    if (req.query.fields) {
+        mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
+    }
+
+    const orders = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' '));
     return res.status(201).json({ message: "success", orders });
 }
 
 export const getMyOrders = async (req, res, next) => {
-    const orders = await OrderModel.find({ userId: req.user._id });
+    const { limit, skip } = pagination(req.query.page, req.query.limit);
+
+    let queryObj = { ...req.query };
+    const execQuery = ['page', 'limit', 'skip', 'sort'];
+    execQuery.map((ele) => {
+        delete queryObj[ele];
+    })
+    queryObj = JSON.stringify(queryObj);
+    queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
+    queryObj = JSON.parse(queryObj);
+
+    const mongooseQuery = OrderModel.find(queryObj).limit(limit).skip(skip);
+
+    if (req.query.fields) {
+        mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
+    }
+
+    const orders  = await mongooseQuery.find({ userId: req.user._id }).sort(req.query.sort?.replaceAll(',', ' '));
     if (!orders) {
         return next(new Error(` invalid order `, { cause: 404 }));
     }
@@ -234,7 +268,11 @@ export const confirmOrder = async (req, res, next) => {
         return next(new Error(`Cannot confirm order: less than 3 days have passed since its creation`, { cause: 403 }));
     }
 
-    if (order.status !== 'cancelled') {
+    if (order.status == 'cancelled') {
+        return next(new Error(`Cannot confirm order the order is cancelled`, { cause: 403 }));
+    }
+
+    if (order.status !== 'pending') {
         return next(new Error(`Cannot confirm order: order status is not pending`, { cause: 403 }));
     }
 
@@ -247,5 +285,5 @@ export const confirmOrder = async (req, res, next) => {
         _id:user._id
     } 
     const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
-    return res.status(200).json({ message: "Order canceled successfully", newOrder });
+    return res.status(200).json({ message: "Order Confirmed successfully", newOrder });
 }
