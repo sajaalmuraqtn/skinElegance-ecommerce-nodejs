@@ -80,19 +80,19 @@ export const getSpecificUser = async (req, res, next) => {
 export const getUnConfirmedUsers = async (req, res, next) => { 
     const { limit, skip } = pagination(req.query.page, req.query.limit)
 
-    const unConfirmedUsers = await UserModel.find({ confirmEmail: 'false',role:'User' }).limit(limit).skip(skip);
-    if (!unConfirmedUsers) {
+    const users = await UserModel.find({ confirmEmail: 'false',role:'User' }).limit(limit).skip(skip);
+    if (!users) {
         return next(new Error(`error while fetching data`, { cause: 400 }));
     }
-    return res.status(200).json({ message: 'success', count: unConfirmedUsers.length, unConfirmedUsers });
+    return res.status(200).json({ message: 'success', count: unConfirmedUsers.length, users });
 
 }
 export const getActiveUsers = async (req, res, next) => { 
     const { limit, skip } = pagination(req.query.page, req.query.limit)
 
-    const activeUsers = await UserModel.find({ confirmEmail: 'true',role:'User' }).limit(limit).skip(skip);
-    if (!activeUsers) {
+    const users = await UserModel.find({ confirmEmail: 'true',role:'User' }).limit(limit).skip(skip);
+    if (!users) {
         return next(new Error(`error while fetching data`, { cause: 400 }));
     }
-    return res.status(200).json({ message: 'success', count: activeUsers.length, activeUsers }); 
+    return res.status(200).json({ message: 'success', count: users.length, users }); 
 }
