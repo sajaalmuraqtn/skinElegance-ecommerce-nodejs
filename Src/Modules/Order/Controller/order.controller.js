@@ -81,7 +81,7 @@ export const createOrder = async (req, res, next) => {
         await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
     for (const product of req.body.products) {
-        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity } })
+        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity, number_sellers: 1} })
     }
     await CartModel.updateOne({ userId: req.user._id }, {
         products: [],
@@ -238,7 +238,7 @@ export const cancelOrder = async (req, res, next) => {
     } 
 
     for (const product of order.products) {
-        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: product.quantity } });
+        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: product.quantity, number_sellers: -1 } });
     }
 
     if (order.couponName) {
