@@ -1,3 +1,4 @@
+import slugify from "slugify";
 import CouponModel from "../../../../DB/model/coupon.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
@@ -8,6 +9,7 @@ export const CreateCoupon = async (req, res, next) => {
   if (await CouponModel.findOne({ name: req.body.name })) {
     return next(new Error("coupon name already exist", { cause: 409 }));
   }
+  req.body.slug=slugify(req.body.name.toLowerCase());
   req.body.expiredDate = new Date(req.body.expiredDate);
   
   const user =await UserModel.findById(req.user._id);
@@ -22,7 +24,7 @@ export const CreateCoupon = async (req, res, next) => {
       _id:user._id
   }   
 
-req.body.createdByUser=createdByUser;
+ req.body.createdByUser=createdByUser;
   req.body.updatedByUser=updatedByUser;
   const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
     folder: `${process.env.APP_NAME}/coupons`
@@ -100,6 +102,7 @@ export const UpdateCoupon = async (req, res, next) => {
       return next(new Error(`coupon name '${req.body.name}' already exist`, { cause: 409 }));
     }
     coupon.name = name;
+    coupon.slug=slugify(name);
   }
 
   if (req.body.amount) {
