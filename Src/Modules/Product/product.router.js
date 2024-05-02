@@ -12,7 +12,7 @@ router.get('/', auth(roles.Admin), asyncHandler(ProductController.getAllProduct)
 router.get('/:productId', validation(validators.getSpecificProduct), asyncHandler(ProductController.getSpecificProduct));
 router.get('/allProducts/active', asyncHandler(ProductController.getActiveProduct));
 router.get('/category/:categoryId', validation(validators.getProductWithCategory), asyncHandler(ProductController.getProductWithCategory));
-router.get('/category/:categoryId/subCategory/:subCategoryId', validation(validators.getProductWithSubCategory), asyncHandler(ProductController.getProductWithSubCategory));
+// router.get('/category/:categoryId/subCategory/:subCategoryId', validation(validators.getProductWithSubCategory), asyncHandler(ProductController.getProductWithSubCategory));
 router.post('/', auth(roles.Admin), fileUpload(fileValidation.image).fields([{
     name: 'mainImage', maxCount: 1
 } , { name: 'subImages', maxCount: 4 }]), validation(validators.createProduct), asyncHandler(ProductController.createProduct));

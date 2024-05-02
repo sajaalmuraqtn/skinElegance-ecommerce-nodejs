@@ -15,7 +15,7 @@ export const createProduct = Joi.object(
         }),
         status: Joi.string().valid('Active', 'Inactive'),
         categoryId: Joi.string().required().min(24).max(24),
-        subCategoryId: Joi.string().required().min(24).max(24),
+        // subCategoryId: Joi.string().required().min(24).max(24),
         expiredDate: Joi.date().greater('now').required()
     }
 )
@@ -34,7 +34,7 @@ export const updateProduct = Joi.object(
         }),
         status: Joi.string().valid('Active', 'Inactive'),
         categoryId: Joi.string().min(24).max(24),
-        subCategoryId: Joi.string().min(24).max(24),
+        // subCategoryId: Joi.string().min(24).max(24),
         expiredDate: Joi.date().greater('now'),
         productId: Joi.string().min(24).max(24).required()
     }
@@ -45,13 +45,13 @@ export const getProductWithCategory = Joi.object(
         page: Joi.number().min(1).positive()
     }
 )
-export const getProductWithSubCategory = Joi.object(
-    {
-        categoryId: Joi.string().min(24).max(24).required(),
-        subCategoryId: Joi.string().min(24).max(24).required(),
-        page: Joi.number().min(1).positive()
-    }
-)
+// export const getProductWithSubCategory = Joi.object(
+//     {
+//         categoryId: Joi.string().min(24).max(24).required(),
+//         subCategoryId: Joi.string().min(24).max(24).required(),
+//         page: Joi.number().min(1).positive()
+//     }
+// )
 export const getSpecificProduct = Joi.object(
     {
         productId: Joi.string().min(24).max(24).required(),
