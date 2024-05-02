@@ -11,7 +11,7 @@ export const createProduct = Joi.object(
         discount: Joi.number().positive().min(1),
         file: Joi.object({
             mainImage: Joi.array().items(generalFieldValidation.file.required()).length(1),
-            subImages: Joi.array().items(generalFieldValidation.file.required()).min(2).max(4)
+            subImages: Joi.array().items(generalFieldValidation.file).min(2).max(4)
         }),
         status: Joi.string().valid('Active', 'Inactive'),
         categoryId: Joi.string().required().min(24).max(24),

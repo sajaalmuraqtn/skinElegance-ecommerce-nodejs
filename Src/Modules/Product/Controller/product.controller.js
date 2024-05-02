@@ -96,10 +96,11 @@ export const createProduct = async (req, res, next) => {
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.files.mainImage[0].path, { folder: `${process.env.APP_NAME}/product/mainImage` });
     req.body.mainImage = { secure_url, public_id };
     req.body.subImages = [];
+    if (req.files){
     for (const file of req.files.subImages) {
         const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, { folder: `${process.env.APP_NAME}/product/subImages` });
         req.body.subImages.push({ secure_url, public_id });
-    }
+    }}
     
     const user = await UserModel.findById(req.user._id);
     const createdByUser = {
