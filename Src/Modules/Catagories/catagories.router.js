@@ -18,7 +18,7 @@ router.get('/:categoryId',validation(validators.getSpecificCategory),asyncHandle
 
 router.post('/create',auth(endPoint.create),fileUpload(fileValidation.image).single('image'),validation(validators.createCategory),asyncHandler(CatagoriesController.createCategory))
 router.put('/:categoryId',auth(endPoint.update),fileUpload(fileValidation.image).single('image'),validation(validators.updateCategory),asyncHandler(CatagoriesController.updateCategory));
-router.put('/softDelete/:categoryId',validation(validators.deleteCategory),auth(endPoint.delete),validation(validators.deleteCategory) ,asyncHandler(CatagoriesController.softDeleteCategory));
-router.put('/restore/:categoryId',validation(validators.deleteCategory),auth(endPoint.delete),validation(validators.deleteCategory) ,asyncHandler(CatagoriesController.restoreCategory));
-router.delete('/hardDelete/:categoryId',validation(validators.deleteCategory),auth(endPoint.delete) ,validation(validators.deleteCategory),asyncHandler(CatagoriesController.hardDeleteCategory));
+router.put('/softDelete/:categoryId',auth(endPoint.delete),validation(validators.deleteCategory) ,asyncHandler(CatagoriesController.softDeleteCategory));
+router.put('/restore/:categoryId',auth(endPoint.delete),validation(validators.deleteCategory) ,asyncHandler(CatagoriesController.restoreCategory));
+router.delete('/hardDelete/:categoryId',auth(endPoint.delete) ,validation(validators.deleteCategory),asyncHandler(CatagoriesController.hardDeleteCategory));
 export default router;

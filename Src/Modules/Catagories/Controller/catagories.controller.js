@@ -179,11 +179,11 @@ export const softDeleteCategory = async (req, res, next) => {
 
 export const hardDeleteCategory = async (req, res, next) => {
     const categoryId = req.params.categoryId;
-    const category = await CategoryModel.findByIdAndDelete(categoryId);
+    const category = await CategoryModel.findOneAndDelete({_id:categoryId,isDeleted:true});
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }
-    const hardDeleteSubCategory = await ProductModel.deleteMany({ categoryId });
-    // const hardDeleteProducts = await SubCategoryModel.deleteMany({ categoryId });
+    // const hardDeleteSubCategory = await SubCategoryModel.deleteMany({ categoryId });
+    const hardDeleteProducts = await ProductModel.deleteMany({ categoryId });
     return res.status(200).json({ message: 'success', category, hardDeleteProducts });
 }
