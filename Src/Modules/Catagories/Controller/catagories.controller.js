@@ -162,17 +162,15 @@ export const restoreCategory = async (req, res, next) => {
 export const softDeleteCategory = async (req, res, next) => {
     const categoryId = req.params.categoryId;
     const user =await UserModel.findById(req.user._id);
-
-    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  }, { new: true });
-    if (!category) {
-        return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
-    }
     const updatedByUser={
         userName:user.userName,
         image:user.image,
         _id:user._id
     } 
-    category.updatedByUser = updatedByUser;
+    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  }, { new: true });
+    if (!category) {
+        return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
+    }
     // const softDeleteSubCategory = await SubCategoryModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  },{new:true});
     const softDeleteProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  },{new:true});
 
