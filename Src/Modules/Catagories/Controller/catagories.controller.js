@@ -18,14 +18,14 @@ export const getCatagories = async (req, res, next) => {
     queryObj = JSON.stringify(queryObj);
     queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
     queryObj = JSON.parse(queryObj);
-  
+
     const mongooseQuery = CategoryModel.find(queryObj).limit(limit).skip(skip);
-  
+
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
-  
-    const  categories= await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).populate('Products');
+
+    const categories = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).populate('Products');
     return res.status(201).json({ message: 'success', categories })
 }
 
@@ -74,22 +74,25 @@ export const createCategory = async (req, res, next) => {
     if (await CategoryModel.findOne({ name }).select('name')) {
         return next(new Error("category name already exist", { cause: 409 }));
     }
-
     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
         folder: `${process.env.APP_NAME}/categories`
     })
-    const user =await UserModel.findById(req.user._id);
-    const createdByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
+    const user = await UserModel.findById(req.user._id);
+    const createdByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
     }
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    }   
-    const category = await CategoryModel.create({ name: name, slug: slugify(name), image: { secure_url, public_id }, createdByUser,updatedByUser})
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+    const category = req.body.status? 
+    await CategoryModel.create({ name: name, slug: slugify(name), image: { secure_url, public_id },status:req.body.status, createdByUser, updatedByUser })
+    :
+    await CategoryModel.create({ name: name, slug: slugify(name), image: { secure_url, public_id }, createdByUser, updatedByUser })
+
     return res.status(201).json({ message: 'success', category });
 
 }
@@ -100,13 +103,13 @@ export const updateCategory = async (req, res, next) => {
     if (!category) {
         return next(new Error(` invalid id ${id} `, { cause: 400 }));
     }
-    const user =await UserModel.findById(req.user._id);
+    const user = await UserModel.findById(req.user._id);
 
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
     if (req.body.name) {
         const name = req.body.name.toLowerCase();
         if (await CategoryModel.findOne({ name }).select('name')) {
@@ -114,8 +117,8 @@ export const updateCategory = async (req, res, next) => {
         }
         category.name = name;
         category.slug = slugify(name);
-        await SubCategoryModel.updateMany({ categoryId }, {categoryName:category.name,updatedByUser });
-        await ProductModel.updateMany({ categoryId }, {categoryName:category.name,updatedByUser });
+        await SubCategoryModel.updateMany({ categoryId }, { categoryName: category.name, updatedByUser });
+        await ProductModel.updateMany({ categoryId }, { categoryName: category.name, updatedByUser });
 
     }
 
@@ -129,10 +132,10 @@ export const updateCategory = async (req, res, next) => {
     if (req.body.status) {
         category.status = req.body.status;
         // await SubCategoryModel.updateMany({ categoryId }, { status: req.body.status,updatedByUser});
-        await ProductModel.updateMany({ categoryId }, { status: req.body.status,updatedByUser});
+        await ProductModel.updateMany({ categoryId }, { status: req.body.status, updatedByUser });
 
     }
-    
+
     category.updatedByUser = updatedByUser;
     await category.save()
     return res.status(201).json({ message: 'success', category });
@@ -140,46 +143,46 @@ export const updateCategory = async (req, res, next) => {
 }
 
 export const restoreCategory = async (req, res, next) => {
-    const categoryId = req.params.categoryId;   
-    const user =await UserModel.findById(req.user._id);
+    const categoryId = req.params.categoryId;
+    const user = await UserModel.findById(req.user._id);
 
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
-    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: false, status: 'Active', updatedByUser:updatedByUser }, { new: true });
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: false, status: 'Active', updatedByUser: updatedByUser }, { new: true });
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }
- 
+
     // const restoreSubCategory = await SubCategoryModel.updateMany({ categoryId }, { isDeleted: false, status: 'Active',updatedByUser:updatedByUser });
-    const restoreProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: false, status: 'Active',updatedByUser:updatedByUser  });
+    const restoreProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: false, status: 'Active', updatedByUser: updatedByUser });
 
     return res.status(200).json({ message: 'success', category, restoreProducts });
 }
 
 export const softDeleteCategory = async (req, res, next) => {
     const categoryId = req.params.categoryId;
-    const user =await UserModel.findById(req.user._id);
-    const updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
-    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  }, { new: true });
+    const user = await UserModel.findById(req.user._id);
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+    const category = await CategoryModel.findByIdAndUpdate(categoryId, { isDeleted: true, status: 'Inactive', updatedByUser: updatedByUser }, { new: true });
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }
     // const softDeleteSubCategory = await SubCategoryModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  },{new:true});
-    const softDeleteProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive',updatedByUser:updatedByUser  },{new:true});
+    const softDeleteProducts = await ProductModel.updateMany({ categoryId }, { isDeleted: true, status: 'Inactive', updatedByUser: updatedByUser }, { new: true });
 
     return res.status(200).json({ message: 'success', category, softDeleteProducts });
 }
 
 export const hardDeleteCategory = async (req, res, next) => {
     const categoryId = req.params.categoryId;
-    const category = await CategoryModel.findOneAndDelete({_id:categoryId,isDeleted:true});
+    const category = await CategoryModel.findOneAndDelete({ _id: categoryId, isDeleted: true });
     if (!category) {
         return next(new Error(` invalid id ${categoryId} `, { cause: 400 }));
     }

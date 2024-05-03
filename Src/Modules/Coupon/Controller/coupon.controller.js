@@ -11,7 +11,7 @@ export const CreateCoupon = async (req, res, next) => {
   }
   req.body.slug=slugify(req.body.name.toLowerCase());
   req.body.expiredDate = new Date(req.body.expiredDate);
-  
+ 
   const user =await UserModel.findById(req.user._id);
   const createdByUser={
       userName:user.userName,
