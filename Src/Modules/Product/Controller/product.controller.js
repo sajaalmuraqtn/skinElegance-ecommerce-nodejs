@@ -92,16 +92,11 @@ export const createProduct = async (req, res, next) => {
     req.body.slug = slugify(name);
 
     req.body.finalPrice = (price - (price * (discount || 0) / 100)).toFixed(2);
-
-    const { secure_url, public_id } = await cloudinary.uploader.upload(req.files.mainImage[0].path, { folder: `${process.env.APP_NAME}/product/mainImage` });
-    req.body.mainImage = { secure_url, public_id };
-    req.body.subImages = [];
-    if (req.files){
-    for (const file of req.files.subImages) {
-        const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, { folder: `${process.env.APP_NAME}/product/subImages` });
-        req.body.subImages.push({ secure_url, public_id });
-    }}
     
+    const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+        folder: `${process.env.APP_NAME}/Products`
+    })
+    req.body.mainImage={ secure_url, public_id };
     const user = await UserModel.findById(req.user._id);
     const createdByUser = {
         userName: user.userName,
@@ -204,31 +199,27 @@ export const updateProduct = async (req, res, next) => {
     }
            
 
-    if (req.files && req.files.mainImage) {
-        // Access uploaded files via req.files
-        // Destroy the previous main image
+    if (req.file) {
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: `${process.env.APP_NAME}/mainImage`
+        })
         await cloudinary.uploader.destroy(product.mainImage.public_id);
-     
-        // Upload the new main image
-        const mainImageUpload = await cloudinary.uploader.upload(req.files.mainImage[0].path, { folder: `${process.env.APP_NAME}/product/mainImage` });
-    
-        // Update the product's mainImage property
-        product.mainImage = { secure_url: mainImageUpload.secure_url, public_id: mainImageUpload.public_id };
+        product.mainImage = { secure_url, public_id };
     }
     
-    if (req.files && req.files.subImages) {
-        // Access uploaded files via req.files
-        // Destroy previous sub images
-        for (const file of product.subImages) {
-            await cloudinary.uploader.destroy(file.public_id);
-        }
+    // if (req.files && req.files.subImages) {
+    //     // Access uploaded files via req.files
+    //     // Destroy previous sub images
+    //     for (const file of product.subImages) {
+    //         await cloudinary.uploader.destroy(file.public_id);
+    //     }
     
-        // Upload new sub images
-        for (const file of req.files.subImages) {
-            const subImageUpload = await cloudinary.uploader.upload(file.path, { folder: `${process.env.APP_NAME}/product/subImages` });
-            product.subImages.push({ secure_url: subImageUpload.secure_url, public_id: subImageUpload.public_id });
-        }
-    }
+    //     // Upload new sub images
+    //     for (const file of req.files.subImages) {
+    //         const subImageUpload = await cloudinary.uploader.upload(file.path, { folder: `${process.env.APP_NAME}/product/subImages` });
+    //         product.subImages.push({ secure_url: subImageUpload.secure_url, public_id: subImageUpload.public_id });
+    //     }
+    // }
     
     const user = await UserModel.findById(req.user._id);
 

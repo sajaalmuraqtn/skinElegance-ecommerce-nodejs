@@ -13,13 +13,8 @@ router.get('/:productId', validation(validators.getSpecificProduct), asyncHandle
 router.get('/allProducts/active', asyncHandler(ProductController.getActiveProduct));
 router.get('/category/:categoryId', validation(validators.getProductWithCategory), asyncHandler(ProductController.getProductWithCategory));
 // router.get('/category/:categoryId/subCategory/:subCategoryId', validation(validators.getProductWithSubCategory), asyncHandler(ProductController.getProductWithSubCategory));
-router.post('/', auth(roles.Admin), fileUpload(fileValidation.image).fields([{
-    name: 'mainImage', maxCount: 1
-} , { name: 'subImages', maxCount: 4 }]), validation(validators.createProduct), asyncHandler(ProductController.createProduct));
-router.put('/:productId', auth(roles.Admin), fileUpload(fileValidation.image).fields([{
-    name: 'mainImage', maxCount: 1
-}
-    , { name: 'subImages', maxCount: 4 }]), validation(validators.updateProduct), asyncHandler(ProductController.updateProduct));
+router.post('/', auth(roles.Admin),fileUpload(fileValidation.image).single('mainImage'), validation(validators.createProduct), asyncHandler(ProductController.createProduct));
+router.put('/:productId', auth(roles.Admin),fileUpload(fileValidation.image).single('mainImage'), validation(validators.updateProduct), asyncHandler(ProductController.updateProduct));
 router.put('/restore/:productId', auth(roles.Admin), asyncHandler(ProductController.restoreProduct));
 router.put('/softDelete/:productId', auth(roles.Admin), asyncHandler(ProductController.hardDeleteProduct));
 router.delete('/hardDelete/:productId', auth(roles.Admin), asyncHandler(ProductController.softDeleteProduct));

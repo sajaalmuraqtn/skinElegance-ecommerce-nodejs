@@ -15,13 +15,7 @@ const ProductSchema = new Schema({
     description: {
         type: String, required: true
     },
-    mainImage: { type: Object, required: true }
-    ,
-    subImages: [
-        {
-            type: Object
-        }
-    ],
+    mainImage: { type: Object, required: true },
     finalPrice: {
         type: Number, required: true
     },

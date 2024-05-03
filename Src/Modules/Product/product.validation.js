@@ -9,10 +9,7 @@ export const createProduct = Joi.object(
         price: Joi.number().positive().required(),
         size: Joi.number().positive(), 
         discount: Joi.number().positive().min(1),
-        file: Joi.object({
-            mainImage: Joi.array().items(generalFieldValidation.file.required()).length(1),
-            subImages: Joi.array().items(generalFieldValidation.file).min(2).max(4)
-        }),
+        file: generalFieldValidation.file.required(),
         status: Joi.string().valid('Active', 'Inactive'),
         categoryId: Joi.string().required().min(24).max(24),
         // subCategoryId: Joi.string().required().min(24).max(24),
@@ -28,10 +25,7 @@ export const updateProduct = Joi.object(
         price: Joi.number().positive(),
         size: Joi.number().positive(),
         discount: Joi.number().positive().min(1),
-        file: Joi.object({
-            mainImage: Joi.array().items(generalFieldValidation.file).length(1),
-            subImages: Joi.array().items(generalFieldValidation.file).min(2).max(4)
-        }),
+        file: generalFieldValidation.file,
         status: Joi.string().valid('Active', 'Inactive'),
         categoryId: Joi.string().min(24).max(24),
         // subCategoryId: Joi.string().min(24).max(24),
