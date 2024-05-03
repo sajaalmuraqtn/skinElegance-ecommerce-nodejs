@@ -15,7 +15,7 @@ router.get('/category/:categoryId', validation(validators.getProductWithCategory
 // router.get('/category/:categoryId/subCategory/:subCategoryId', validation(validators.getProductWithSubCategory), asyncHandler(ProductController.getProductWithSubCategory));
 router.post('/', auth(roles.Admin),fileUpload(fileValidation.image).single('mainImage'), validation(validators.createProduct), asyncHandler(ProductController.createProduct));
 router.put('/:productId', auth(roles.Admin),fileUpload(fileValidation.image).single('mainImage'), validation(validators.updateProduct), asyncHandler(ProductController.updateProduct));
-router.put('/restore/:productId', auth(roles.Admin), asyncHandler(ProductController.restoreProduct));
-router.put('/softDelete/:productId', auth(roles.Admin), asyncHandler(ProductController.hardDeleteProduct));
-router.delete('/hardDelete/:productId', auth(roles.Admin), asyncHandler(ProductController.softDeleteProduct));
+router.put('/restore/:productId', auth(roles.Admin), validation(validators.deleteProduct), asyncHandler(ProductController.restoreProduct));
+router.put('/softDelete/:productId', auth(roles.Admin), validation(validators.deleteProduct), asyncHandler(ProductController.softDeleteProduct));
+router.delete('/hardDelete/:productId', auth(roles.Admin), validation(validators.deleteProduct), asyncHandler(ProductController.hardDeleteProduct));
 export default router;

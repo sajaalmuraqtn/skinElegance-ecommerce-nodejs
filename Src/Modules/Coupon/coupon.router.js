@@ -13,9 +13,9 @@ router.get('/',auth(roles.Admin),asyncHandler(CouponController.GetAllCoupons));
 router.get('/active',asyncHandler(CouponController.getActiveCoupons ));
 router.put('/:couponId',auth(roles.Admin),fileUpload(fileValidation.image).single('image'),validation(validators.updateCoupon),asyncHandler(CouponController.UpdateCoupon));
 router.get('/:couponId',auth(roles.Admin),validation(validators.getSpecificCoupon),asyncHandler(CouponController.GetSpecificCoupons));
-router.patch('/softDelete/:couponId',auth(roles.Admin),validation(validators.getSpecificCoupon),asyncHandler(CouponController.SoftDelete));
-router.delete('/hardDelete/:couponId',auth(roles.Admin),validation(validators.getSpecificCoupon),asyncHandler(CouponController.HardDelete));
-router.patch('/restore/:couponId',auth(roles.Admin),validation(validators.getSpecificCoupon),asyncHandler(CouponController.Restore));
+router.patch('/softDelete/:couponId',auth(roles.Admin),validation(validators.deleteCoupon),asyncHandler(CouponController.SoftDelete));
+router.delete('/hardDelete/:couponId',auth(roles.Admin),validation(validators.deleteCoupon),asyncHandler(CouponController.HardDelete));
+router.patch('/restore/:couponId',auth(roles.Admin),validation(validators.deleteCoupon),asyncHandler(CouponController.Restore));
 
 
 export default router;

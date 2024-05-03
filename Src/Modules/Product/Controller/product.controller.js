@@ -362,7 +362,10 @@ export const hardDeleteProduct = async (req, res, next) => {
     if (!checkProduct) {
         return next(new Error("product not found", { cause: 404 }));
     }
-    const product = await ProductModel.findByIdAndDelete(req.params.productId);
+    const product = await ProductModel.findOneAndDelete({ _id: req.params.productId, isDeleted: true }, { new: true });
+    if (!product) {
+        return next(new Error("product not Archived", { cause: 404 }));
+    }
     return res.status(201).json({ message: 'success', product });
 }
 

@@ -23,3 +23,8 @@ export const getSpecificCoupon= Joi.object(
         couponId:Joi.string().required().min(24).max(24)
     }
    )
+export const deleteCoupon= Joi.object(
+    { 
+        couponId:Joi.string().required().min(24).max(24)
+    }
+   )

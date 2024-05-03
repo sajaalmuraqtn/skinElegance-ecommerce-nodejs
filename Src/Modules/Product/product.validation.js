@@ -51,4 +51,9 @@ export const getSpecificProduct = Joi.object(
         productId: Joi.string().min(24).max(24).required(),
     }
 )
+export const deleteProduct = Joi.object(
+    {
+        productId: Joi.string().min(24).max(24).required(),
+    }
+)
 
