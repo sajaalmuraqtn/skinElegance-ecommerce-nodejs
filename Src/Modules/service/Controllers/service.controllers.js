@@ -168,7 +168,7 @@ export const softDeleteService = async (req, res, next) => {
         image: user.image,
         _id: user._id
     }
-    const service = await ProductModel.findByIdAndUpdate(req.params.serviceId, { isDeleted: true, status: 'Inactive',updatedByUser: updatedByUser }, { new: true });
+    const service = await ServiceModel.findByIdAndUpdate(req.params.serviceId, { isDeleted: true, status: 'Inactive',updatedByUser: updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', service });
 }
 
