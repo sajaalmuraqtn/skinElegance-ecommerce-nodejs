@@ -201,7 +201,7 @@ export const updateProduct = async (req, res, next) => {
 
     if (req.file) {
         const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-            folder: `${process.env.APP_NAME}/mainImage`
+            folder: `${process.env.APP_NAME}/Products`
         })
         await cloudinary.uploader.destroy(product.mainImage.public_id);
         product.mainImage = { secure_url, public_id };

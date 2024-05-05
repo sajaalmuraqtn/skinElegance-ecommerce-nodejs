@@ -4,39 +4,30 @@ import { generalFieldValidation } from "../../Middleware/validation.js"
 export const createAdvertisement = Joi.object(
     {
         name: Joi.string().min(3).max(25).required(),
-        description: Joi.string().min(2).max(150000).required(),
-        stock: Joi.number().integer().required(),
-        price: Joi.number().positive().required(),
-        size: Joi.number().positive().required(), 
-        discount: Joi.number().positive().min(1),
-        file: Joi.object({
-            mainImage: Joi.array().items(generalFieldValidation.file.required()).length(1),
-            subImages: Joi.array().items(generalFieldValidation.file.required()).min(2).max(4)
-        }),
+        facebookLink: Joi.string(),
+        instagramLink: Joi.string(),
+        description: Joi.string().min(50).max(150000).required(),
+        phoneNumber: Joi.string().min(10).max(10).required(),
+        file: generalFieldValidation.file.required(),
         status: Joi.string().valid('Active', 'Inactive'),
-        categoryId: Joi.string().required().min(24).max(24),
-        subCategoryId: Joi.string().required().min(24).max(24),
-        expiredDate: Joi.date().greater('now').required()
+        expiredDate: Joi.date().greater('now').required(),
+        address: Joi.string().min(10).max(100),
+        city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala').required()
     }
 )
 
 export const updateAdvertisement = Joi.object(
     {
         name: Joi.string().min(3).max(25),
-        description: Joi.string().min(2).max(150000),
-        stock: Joi.number().integer().positive(),
-        price: Joi.number().positive(),
-        size: Joi.number().positive(),
-        discount: Joi.number().positive().min(1),
-        file: Joi.object({
-            mainImage: Joi.array().items(generalFieldValidation.file).length(1),
-            subImages: Joi.array().items(generalFieldValidation.file).min(2).max(4)
-        }),
+        facebookLink: Joi.string(),
+        instagramLink: Joi.string(),
+        description: Joi.string().min(50).max(150000),
+        phoneNumber: Joi.string().min(10).max(10),
+        file: generalFieldValidation.file,
         status: Joi.string().valid('Active', 'Inactive'),
-        categoryId: Joi.string().min(24).max(24),
-        subCategoryId: Joi.string().min(24).max(24),
         expiredDate: Joi.date().greater('now'),
-        advertisementId: Joi.string().min(24).max(24).required()
+        address: Joi.string().min(10).max(100),
+        city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala')
     }
 )
  

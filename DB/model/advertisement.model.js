@@ -1,62 +1,65 @@
 import mongoose, { Schema, Types, model } from "mongoose";
 
 const AdvertisementSchema = new Schema({
-    title: {
+    name: {
         type: String, required: true, unique: true, trim: true
     },
     slug: {
         type: String, required: true,
     },
-    services: [{
-        price: { type: Number, required: true },
-        serviceTitle: { type: String, required: true, unique: true },
-    }],
-    phoneNumber: [{
+    phoneNumber: {
         type: String, required: true,
-    }],
-    address: [{
+    },
+    address: {
         type: String, required: true,
-    }],
-    socialMediaLinks: [{
-        type: String, required: true,
-    }],
+    },
+    facebookLink:{
+        type: String,
+    },
+    instagramLink:{
+        type: String,
+    },
     description: {
         type: String, required: true
-    }, discount: {
-        type: Number, default: 0
     },
     mainImage: {
         type: Object, required: true
     }
     ,
-    subImages: [
-        {
-            type: Object, required: true
-        }
-    ], address: [{
-        type: String, required: true
-    }],
     status: {
         type: String, enum: ['Active', 'Inactive'], default: 'Active'
     }, 
     expiredDate: {
         type: Date, required: true
     },
-    note: String
-    ,
     isDeleted: {
         type: Boolean, default: false
     },
-    createdBy: {
-        type: Types.ObjectId, ref: 'User', required: true
+    createdByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User',required:true  },
+        userName: String
     },
-    updatedBy: {
-        type: Types.ObjectId, ref: 'User', required: true
-    }
-
-}, {
-    timestamps: true
+    updatedByUser: {
+        image: Object,
+        _id: { type: Types.ObjectId, ref: 'User',required:true  },
+        userName: String
+    },
+    city:{
+        type:String,
+        enum:['Hebron','Nablus','Jerusalem','Ramallah','Tulkarm',"Jenin","Al-Bireh","Jericho","Yatta","Beit Jala"]
+        ,required:true
+     }
+},  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
+AdvertisementSchema.virtual('Services', {
+    localField: '_id',
+    foreignField: 'advertisementId',
+    ref: 'Service'
+});
 
 
 

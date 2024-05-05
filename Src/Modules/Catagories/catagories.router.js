@@ -10,7 +10,7 @@ import { validation } from "../../Middleware/validation.js";
 
 const router=Router();
 
-router.use('/:categoryId/subCatagories',validation(validators.getSpecificCategory),SubCatagoriesRouter);
+// router.use('/:categoryId/subCatagories',validation(validators.getSpecificCategory),SubCatagoriesRouter);
 router.get('/',auth(endPoint.getall),asyncHandler(CatagoriesController.getCatagories));
 router.get('/active',asyncHandler(CatagoriesController.getActiveCategory));
 router.get('/LatestNewActiveCategory',asyncHandler(CatagoriesController.getActiveCategory));
