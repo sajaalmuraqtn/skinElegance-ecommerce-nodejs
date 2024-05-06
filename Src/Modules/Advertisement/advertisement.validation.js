@@ -27,7 +27,8 @@ export const updateAdvertisement = Joi.object(
         status: Joi.string().valid('Active', 'Inactive'),
         expiredDate: Joi.date().greater('now'),
         address: Joi.string().min(10).max(100),
-        city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala')
+        city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala'),
+        advertisementId: Joi.string().min(24).max(24).required()
     }
 )
  

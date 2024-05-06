@@ -9,7 +9,7 @@ export const createService = Joi.object(
         discount: Joi.number().positive().min(1),
         file: generalFieldValidation.file.required(),
         status: Joi.string().valid('Active', 'Inactive'),
-        advertisementId: Joi.string().required().min(24).max(24),
+        advertisementId: Joi.string().required().min(24).max(24).required()
     }
 )
 
