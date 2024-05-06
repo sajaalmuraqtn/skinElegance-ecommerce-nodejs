@@ -88,7 +88,7 @@ export const updateService = async (req, res, next) => {
 
     if (req.body.price) {
         service.price = req.body.price;
-        service.finalPrice = (req.body.price - (req.body.price * (discount || 0) / 100)).toFixed(2);
+        service.finalPrice = (req.body.price - (req.body.price * (service.discount || 0) / 100)).toFixed(2);
     }
 
     if (req.body.discount) {
