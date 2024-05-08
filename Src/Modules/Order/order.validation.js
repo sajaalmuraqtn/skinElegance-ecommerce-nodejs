@@ -14,11 +14,10 @@ export const createOrder= Joi.object(
    )
 
 
-export const addContactsOrder= Joi.object(
+export const addContactOrder= Joi.object(
     {
-        orderId:Joi.string().required().min(24).max(24),
-        adminPhoneNumber: Joi.string().min(10).max(10).required() , 
-        adminEmail:generalFieldValidation.email, 
+        contactId:Joi.string().required().min(24).max(24),
+        orderId:Joi.string().required().min(24).max(24)
     }
 )
 

@@ -5,6 +5,7 @@ import ProductModel from "../../../../DB/model/product.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import moment from 'moment';
 import { pagination } from "../../../Services/pagination.js";
+import ContactModel from "../../../../DB/model/contact.model.js";
 
 export const createOrder = async (req, res, next) => {
     const cart = await CartModel.findOne({ userId: req.user._id });
@@ -81,7 +82,7 @@ export const createOrder = async (req, res, next) => {
         await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
     for (const product of req.body.products) {
-        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity, number_sellers: 1} })
+        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity, number_sellers: 1 } })
     }
     await CartModel.updateOne({ userId: req.user._id }, {
         products: [],
@@ -131,7 +132,7 @@ export const getMyOrders = async (req, res, next) => {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
 
-    const orders  = await mongooseQuery.find({ userId: req.user._id }).sort(req.query.sort?.replaceAll(',', ' '));
+    const orders = await mongooseQuery.find({ userId: req.user._id }).sort(req.query.sort?.replaceAll(',', ' '));
     if (!orders) {
         return next(new Error(` invalid order `, { cause: 404 }));
     }
@@ -152,26 +153,25 @@ export const updateStatusOrder = async (req, res, next) => {
     if (!order) {
         return next(new Error(`order not found`, { cause: 404 }));
     }
-    'pending','cancelled','confirmed','onWay','delivered'
 
     if (order.status == 'cancelled' || order.status == 'delivered') {
         return next(new Error(` can not change status this order `, { cause: 404 }));
     }
 
-    if (order.status !== 'confirmed' && req.body.status== 'onWay') {
+    if (order.status !== 'confirmed' && req.body.status == 'onWay') {
         return next(new Error(` can not change status its should be confirmed `, { cause: 404 }));
     }
 
     if (order.status !== 'onWay' && req.body.status == 'delivered') {
         return next(new Error(` can not change status its should be onWay `, { cause: 404 }));
-    } 
-    const user =await UserModel.findById(req.user._id);
-    
-    req.body.updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
+    }
+    const user = await UserModel.findById(req.user._id);
+
+    req.body.updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
     const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
     return res.status(201).json({ message: "success", order: newOrder });
 }
@@ -183,17 +183,26 @@ export const addContactsOrder = async (req, res, next) => {
         if (!order) {
             return next(new Error(`Order not found`, { cause: 404 }));
         }
-        
+        if (order.status !== 'confirmed' || req.body.status !== 'onWay') {
+            return next(new Error(` can not add contact the order should be confirmed or onWay `, { cause: 404 }));
+        }
         const user = await UserModel.findById(req.user._id);
-
         order.updatedByUser = {
             userName: user.userName,
             image: user.image,
             _id: user._id
         };
+        const addedContact = await ContactModel.findOne({ _id: req.body.contactId, confirmEmail: "true" });
+        if (!addedContact) {
+            return next(new Error(`Contact not found`, { cause: 404 }));
+        }
+        const contact = {
+            adminEmail: addedContact.email,
+            adminPhoneNumber: addedContact.phoneNumber,
+            _id: addedContact._id
+        }
 
-        // Push new contact object into the contacts array
-        order.contacts.push(req.body);
+        order.contact = contact;
 
         // Save the updated order document
         await order.save();
@@ -207,7 +216,7 @@ export const addContactsOrder = async (req, res, next) => {
 
 export const cancelOrder = async (req, res, next) => {
     const orderId = req.params.orderId;
-    const order = await OrderModel.findOne({ _id: orderId});
+    const order = await OrderModel.findOne({ _id: orderId });
 
     if (!order) {
         return next(new Error(`Invalid order`, { cause: 404 }));
@@ -229,13 +238,13 @@ export const cancelOrder = async (req, res, next) => {
 
     req.body.status = 'cancelled';
 
-    const user =await UserModel.findById(req.user._id);
+    const user = await UserModel.findById(req.user._id);
 
-    req.body.updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
+    req.body.updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
 
     for (const product of order.products) {
         await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: product.quantity, number_sellers: -1 } });
@@ -252,7 +261,7 @@ export const cancelOrder = async (req, res, next) => {
 
 export const confirmOrder = async (req, res, next) => {
     const orderId = req.params.orderId;
-    const order = await OrderModel.findOne({ _id: orderId});
+    const order = await OrderModel.findOne({ _id: orderId });
 
     if (!order) {
         return next(new Error(`Invalid order`, { cause: 404 }));
@@ -277,13 +286,13 @@ export const confirmOrder = async (req, res, next) => {
     }
 
     req.body.status = 'confirmed';
-    const user =await UserModel.findById(req.user._id);
+    const user = await UserModel.findById(req.user._id);
 
-    req.body.updatedByUser={
-        userName:user.userName,
-        image:user.image,
-        _id:user._id
-    } 
+    req.body.updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
     const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
     return res.status(200).json({ message: "Order Confirmed successfully", newOrder });
 }

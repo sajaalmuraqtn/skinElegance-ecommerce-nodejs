@@ -22,7 +22,7 @@ const ContactSchema = new Schema({
         image: Object,
         _id: { type: Types.ObjectId, ref: 'User',required:true },
         userName: String
-    },
+    }
 }, {
     timestamps: true
 })
