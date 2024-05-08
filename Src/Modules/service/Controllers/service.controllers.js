@@ -97,7 +97,7 @@ export const updateService = async (req, res, next) => {
     }
     
     if (req.body.status) {
-        const checkAdvertisement = await CategoryModel.findById(service.categoryId);
+        const checkAdvertisement = await AdvertisementModel.findById(service.advertisementId);
         if (req.body.status == "Active" && (checkAdvertisement.isDeleted || checkAdvertisement.status == "Inactive" )) {
             return next(new Error("can not active this service advertisement not available", { cause: 400 }));
         }
