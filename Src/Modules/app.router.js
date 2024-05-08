@@ -11,6 +11,7 @@ import OrderRouter from './Order/order.router.js'
 import FavoriteRouter from './Favorite/favorite.router.js'
 import AdvertisementRouter from './Advertisement/advertisement.router.js'
 import ServiceRouter from './service/service.router.js'
+import ContactRouter from './Contacts/contact.router.js'
 import cors from 'cors'
 import ConnectDB from '../../DB/connection.js';
 
@@ -33,6 +34,7 @@ app.use('/order', OrderRouter);
 app.use('/Favorite', FavoriteRouter);
 app.use('/advertisement', AdvertisementRouter);
 app.use('/services', ServiceRouter);
+app.use('/contact', ContactRouter);
 
 
 app.get('*',(req,res)=>{ 

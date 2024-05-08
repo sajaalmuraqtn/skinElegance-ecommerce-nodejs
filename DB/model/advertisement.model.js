@@ -14,10 +14,10 @@ const AdvertisementSchema = new Schema({
         type: String, required: true,
     },
     facebookLink:{
-        type: String,
+        type: String
     },
     instagramLink:{
-        type: String,
+        type: String
     },
     description: {
         type: String, required: true
