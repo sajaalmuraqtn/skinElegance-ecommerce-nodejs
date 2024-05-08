@@ -183,8 +183,8 @@ export const addContactsOrder = async (req, res, next) => {
         if (!order) {
             return next(new Error(`Order not found`, { cause: 404 }));
         }
-        if (order.status !== 'confirmed' || order.status !== 'onWay') {
-            return next(new Error(` can not add contact the order should be confirmed or onWay `, { cause: 404 }));
+        if (order.status != 'confirmed' && order.status != 'onWay') {
+            return next(new Error(` can not add contact the order should be confirmed or onWay `, { cause: 409 }));
         }
         const user = await UserModel.findById(req.user._id);
         order.updatedByUser = {
