@@ -31,7 +31,7 @@ export const updateStatusOrder= Joi.object(
 export const cancelOrder = Joi.object(
     { 
         orderId:Joi.string().required().min(24).max(24),
-        reasonRejected:Joi.string().required().min(24).max(50) 
+        reasonRejected:Joi.string().required().min(50).max(200) 
     }
    )
 export const confirmOrder = Joi.object(
