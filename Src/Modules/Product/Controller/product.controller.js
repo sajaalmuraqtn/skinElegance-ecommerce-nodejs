@@ -56,8 +56,8 @@ export const getActiveProduct = async (req, res, next) => {
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
-
-    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ status: 'Active' });
+    const currentDate = new Date();
+    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ status: 'Active',isDeleted:false,expiredDate: { $gt: currentDate }  });
     const count = await ProductModel.estimatedDocumentCount();
     return res.status(201).json({ message: 'success', page: products.length, total: count, products });
 

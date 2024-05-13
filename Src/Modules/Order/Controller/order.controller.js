@@ -16,13 +16,13 @@ export const createOrder = async (req, res, next) => {
         return next(new Error("cart is Empty", { cause: 400 }))
     }
     req.body.products = cart.products;
+    const currentDate = new Date();
 
     if (req.body.couponName) {
         const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         if (!coupon) {
             return next(new Error("coupon not found", { cause: 404 }));
         }
-        const currentDate = new Date();
 
         if (coupon.expiredDate <= currentDate) {
             return next(new Error("this coupon has expired", { cause: 400 }));
@@ -38,11 +38,15 @@ export const createOrder = async (req, res, next) => {
     for (let product of req.body.products) {
         const checkProduct = await ProductModel.findOne({
             _id: product.productId,
-            stock: { $gte: product.quantity }
+            stock: { $gte: product.quantity },
+            status:"Active",
+            expiredDate: { $gt:currentDate } ,
+            isDeleted:'false'
+        
         })
         console.log(checkProduct);
         if (!checkProduct) {
-            return next(new Error(" product quantity not available", { cause: 400 }));
+            return next(new Error( `product '${product.name}' quantity not available`, { cause: 400 }));
         }
         product = product.toObject();
         product.name = checkProduct.name;

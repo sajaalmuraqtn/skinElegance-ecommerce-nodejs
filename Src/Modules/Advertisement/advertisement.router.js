@@ -11,6 +11,7 @@ router.use('/:advertisementId/services',validation(validators.getSpecificAdverti
 
 router.get('/', auth(roles.Admin), asyncHandler(AdvertisementController.getAllAdvertisement));
 router.get('/:advertisementId', validation(validators.getSpecificAdvertisement), asyncHandler(AdvertisementController.getSpecificAdvertisement));
+router.get('/admin/:advertisementId', auth(roles.Admin), validation(validators.getSpecificAdvertisement), asyncHandler(AdvertisementController.getSpecificAdvertisementAdmin));
 router.get('/allAdvertisements/active', asyncHandler(AdvertisementController.getActiveAdvertisement));
 router.post('/', auth(roles.Admin),fileUpload(fileValidation.image).single('mainImage'), validation(validators.createAdvertisement), asyncHandler(AdvertisementController.createAdvertisement));
 router.put('/:advertisementId', auth(roles.Admin), fileUpload(fileValidation.image).single('mainImage'), validation(validators.updateAdvertisement), asyncHandler(AdvertisementController.updateAdvertisement));

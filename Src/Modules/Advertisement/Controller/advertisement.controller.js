@@ -64,46 +64,46 @@ export const getActiveAdvertisement = async (req, res, next) => {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
 
-    const advertisements = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ status: 'Active', expiredDate: { $gt: currentDate } }).populate('Services');
+    const advertisements = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ status: 'Active', isDeleted: false, expiredDate: { $gt: currentDate } }).populate('Services');
     const count = await AdvertisementModel.estimatedDocumentCount();
     return res.status(201).json({ message: 'success', page: advertisements.length, total: count, advertisements });
 }
 
 export const createAdvertisement = async (req, res, next) => {
-    
-     const name = req.body.name.toLowerCase();   
-     if (await AdvertisementModel.findOne({ name })) {
-         return next(new Error("advertisement name already exist", { cause: 409 }));
-     }
-     req.body.name=name;
-     req.body.slug = slugify(name);
- 
- 
-     const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
-         folder: `${process.env.APP_NAME}/advertisements`
-     })
-     req.body.mainImage={ secure_url, public_id };
- 
-     const user = await UserModel.findById(req.user._id);
-     const createdByUser = {
-         userName: user.userName,
-         image: user.image,
-         _id: user._id
-     }
-     const updatedByUser = {
-         userName: user.userName,
-         image: user.image,
-         _id: user._id
-     }
- 
-     req.body.createdByUser = createdByUser;
-     req.body.updatedByUser = updatedByUser;
-     console.log(req.body);
-     const advertisement = await AdvertisementModel.create(req.body);
-     if (!advertisement) {
-         return next(new Error("error while creating advertisement", { cause: 400 }));
-     }
-     return res.status(201).json({ message: 'success', advertisement });
+
+    const name = req.body.name.toLowerCase();
+    if (await AdvertisementModel.findOne({ name })) {
+        return next(new Error("advertisement name already exist", { cause: 409 }));
+    }
+    req.body.name = name;
+    req.body.slug = slugify(name);
+
+
+    const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+        folder: `${process.env.APP_NAME}/advertisements`
+    })
+    req.body.mainImage = { secure_url, public_id };
+
+    const user = await UserModel.findById(req.user._id);
+    const createdByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+    const updatedByUser = {
+        userName: user.userName,
+        image: user.image,
+        _id: user._id
+    }
+
+    req.body.createdByUser = createdByUser;
+    req.body.updatedByUser = updatedByUser;
+    console.log(req.body);
+    const advertisement = await AdvertisementModel.create(req.body);
+    if (!advertisement) {
+        return next(new Error("error while creating advertisement", { cause: 400 }));
+    }
+    return res.status(201).json({ message: 'success', advertisement });
 }
 
 export const updateAdvertisement = async (req, res, next) => {
@@ -111,7 +111,7 @@ export const updateAdvertisement = async (req, res, next) => {
     const advertisement = await AdvertisementModel.findById(req.params.advertisementId);
     if (!advertisement) {
         return next(new Error("advertisement not found", { cause: 404 }));
-    } 
+    }
     const user = await UserModel.findById(req.user._id);
 
     const updatedByUser = {
@@ -146,7 +146,7 @@ export const updateAdvertisement = async (req, res, next) => {
 
     if (req.body.status) {
         advertisement.status = req.body.status;
-        await ServiceModel.updateMany({advertisementId:req.params.advertisementId},{status:req.body.status,updatedByUser:updatedByUser});
+        await ServiceModel.updateMany({ advertisementId: req.params.advertisementId }, { status: req.body.status, updatedByUser: updatedByUser });
     }
 
     if (req.file) {
@@ -157,17 +157,32 @@ export const updateAdvertisement = async (req, res, next) => {
         advertisement.mainImage = { secure_url, public_id };
     }
 
-    advertisement.updatedByUser=updatedByUser;
+    advertisement.updatedByUser = updatedByUser;
     await advertisement.save()
 
     return res.status(201).json({ message: 'success', advertisement });
 }
- 
- 
 
+
+
+export const getSpecificAdvertisementAdmin = async (req, res, next) => {
+    const advertisement = await AdvertisementModel.findById(req.params.advertisementId).populate('Services');
+    if (!advertisement) {
+        return next(new Error("advertisement not found", { cause: 404 }));
+    }
+
+    return res.status(201).json({ message: 'success', advertisement });
+}
 export const getSpecificAdvertisement = async (req, res, next) => {
-    const advertisement = await AdvertisementModel.findById(req.params.advertisementId).populate('Services') ;
-     if (!advertisement) {
+    const advertisement = await AdvertisementModel.findById(req.params.advertisementId)
+        .populate({
+            path: 'Services',
+            match: {
+                isDeleted: false,
+                status: 'active'
+            }
+        });
+    if (!advertisement) {
         return next(new Error("advertisement not found", { cause: 404 }));
     }
 
@@ -186,8 +201,8 @@ export const restoreAdvertisement = async (req, res, next) => {
         image: user.image,
         _id: user._id
     }
-    const advertisement = await AdvertisementModel.findByIdAndUpdate(req.params.advertisementId, { isDeleted: false, status: 'Active',updatedByUser }, { new: true });
-    await ServiceModel.updateMany({advertisementId:req.params.advertisementId}, { isDeleted: false, status: 'Active',updatedByUser}, { new: true });
+    const advertisement = await AdvertisementModel.findByIdAndUpdate(req.params.advertisementId, { isDeleted: false, status: 'Active', updatedByUser }, { new: true });
+    await ServiceModel.updateMany({ advertisementId: req.params.advertisementId }, { isDeleted: false, status: 'Active', updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', advertisement });
 }
 
@@ -200,12 +215,12 @@ export const softDeleteAdvertisement = async (req, res, next) => {
         _id: user._id
     }
 
-    const advertisement = await AdvertisementModel.findByIdAndUpdate(req.params.advertisementId, { isDeleted: true, status: 'Inactive',updatedByUser}, { new: true });
+    const advertisement = await AdvertisementModel.findByIdAndUpdate(req.params.advertisementId, { isDeleted: true, status: 'Inactive', updatedByUser }, { new: true });
     if (!advertisement) {
         return next(new Error("advertisement not found", { cause: 404 }));
-    } 
-    
-    await ServiceModel.updateMany({advertisementId:req.params.advertisementId}, { isDeleted: true, status: 'Inactive',updatedByUser}, { new: true });
+    }
+
+    await ServiceModel.updateMany({ advertisementId: req.params.advertisementId }, { isDeleted: true, status: 'Inactive', updatedByUser }, { new: true });
     return res.status(201).json({ message: 'success', advertisement });
 }
 
@@ -213,8 +228,8 @@ export const hardDeleteAdvertisement = async (req, res, next) => {
     const advertisement = await AdvertisementModel.findByIdAndDelete(req.params.advertisementId);
     if (!advertisement) {
         return next(new Error("advertisement not found", { cause: 404 }));
-    } 
-    await ServiceModel.deleteMany({advertisementId:req.params.advertisementId});
+    }
+    await ServiceModel.deleteMany({ advertisementId: req.params.advertisementId });
     return res.status(201).json({ message: 'success', advertisement });
 }
 

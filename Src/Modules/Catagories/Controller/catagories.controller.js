@@ -60,7 +60,7 @@ export const getLatestNewActiveCategory = async (req, res, next) => {
     queryObj = JSON.parse(queryObj);
   
     try {
-        const mongooseQuery = CategoryModel.find({ status: 'Active', ...queryObj }).limit(limit).skip(skip);
+        const mongooseQuery = CategoryModel.find({ status: 'Active',isDeleted:false, ...queryObj }).limit(limit).skip(skip);
   
         if (req.query.fields) {
           mongooseQuery.select(req.query.fields?.replaceAll(',', ' '));
