@@ -47,28 +47,27 @@ export const getActiveCategory = async (req, res, next) => {
 
 }
 
-export const getLatestNewActiveCategory = async (req, res, next) => {
+const getLatestNewActiveCategory = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
-
+  
     let queryObj = { ...req.query };
     const execQuery = ['page', 'limit', 'skip', 'sort'];
     execQuery.map((ele) => {
-        delete queryObj[ele];
-    })
+      delete queryObj[ele];
+    });
     queryObj = JSON.stringify(queryObj);
     queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
     queryObj = JSON.parse(queryObj);
-
+  
     const mongooseQuery = await CategoryModel.find({ status: 'Active' }).limit(limit).skip(skip);
-
+  
     if (req.query.fields) {
-        mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
+      mongooseQuery.select(req.query.fields?.replaceAll(',', ' '));
     }
-
-    const activeCatagories = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' '));
-    return res.status(200).json({ message: 'success', count: activeCatagories.length, activeCatagories });
-}
-
+  
+    const activeCategories = await mongooseQuery.sort({ createdAt: -1 }); // Sort by createdAt in descending order
+    return res.status(200).json({ message: 'success', count: activeCategories.length, activeCategories });
+  };
 export const createCategory = async (req, res, next) => {
     const name = req.body.name.toLowerCase();
     if (await CategoryModel.findOne({ name }).select('name')) {
