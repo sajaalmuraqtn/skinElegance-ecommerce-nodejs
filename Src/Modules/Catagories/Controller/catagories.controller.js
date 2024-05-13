@@ -59,15 +59,20 @@ export const getLatestNewActiveCategory = async (req, res, next) => {
     queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
     queryObj = JSON.parse(queryObj);
   
-    const mongooseQuery = await CategoryModel.find({ status: 'Active' }).limit(limit).skip(skip);
+    try {
+        const mongooseQuery = CategoryModel.find({ status: 'Active', ...queryObj }).limit(limit).skip(skip);
   
-    if (req.query.fields) {
-      mongooseQuery.select(req.query.fields?.replaceAll(',', ' '));
+        if (req.query.fields) {
+          mongooseQuery.select(req.query.fields?.replaceAll(',', ' '));
+        }
+  
+        const activeCategories = await mongooseQuery.sort({ createdAt: -1 }); // Sort by createdAt in descending order
+        return res.status(200).json({ message: 'success', count: activeCategories.length, activeCategories });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
-  
-    const activeCategories = await mongooseQuery.sort({ createdAt: -1 }); // Sort by createdAt in descending order
-    return res.status(200).json({ message: 'success', count: activeCategories.length, activeCategories });
-  };
+};
 
 export const createCategory = async (req, res, next) => {
     const name = req.body.name.toLowerCase();
