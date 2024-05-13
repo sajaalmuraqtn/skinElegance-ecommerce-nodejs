@@ -174,12 +174,11 @@ export const getSpecificAdvertisementAdmin = async (req, res, next) => {
     return res.status(201).json({ message: 'success', advertisement });
 }
 export const getSpecificAdvertisement = async (req, res, next) => {
-    const advertisement = await AdvertisementModel.findById(req.params.advertisementId)
-        .populate({
+    const advertisement = await AdvertisementModel.findById(req.params.advertisementId).populate({
             path: 'Services',
             match: {
                 isDeleted: false,
-                status: 'active'
+                status: 'Active'
             }
         });
     if (!advertisement) {
