@@ -47,7 +47,7 @@ export const getActiveCategory = async (req, res, next) => {
 
 }
 
-const getLatestNewActiveCategory = async (req, res, next) => {
+export const getLatestNewActiveCategory = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
   
     let queryObj = { ...req.query };
@@ -68,6 +68,7 @@ const getLatestNewActiveCategory = async (req, res, next) => {
     const activeCategories = await mongooseQuery.sort({ createdAt: -1 }); // Sort by createdAt in descending order
     return res.status(200).json({ message: 'success', count: activeCategories.length, activeCategories });
   };
+
 export const createCategory = async (req, res, next) => {
     const name = req.body.name.toLowerCase();
     if (await CategoryModel.findOne({ name }).select('name')) {
