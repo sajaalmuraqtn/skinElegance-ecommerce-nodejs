@@ -26,7 +26,7 @@ export const getAllProduct = async (req, res, next) => {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
 
-    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' '));
+    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).populate('reviews');;
     const count = await ProductModel.estimatedDocumentCount();
     return res.status(201).json({ message: 'success', page: products.length, total: count, products });
 
@@ -57,7 +57,7 @@ export const getActiveProduct = async (req, res, next) => {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
     const currentDate = new Date();
-    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ status: 'Active',isDeleted:false,expiredDate: { $gt: currentDate }  });
+    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ status: 'Active',isDeleted:false,expiredDate: { $gt: currentDate }  }).populate('reviews');;
     const count = await ProductModel.estimatedDocumentCount();
     return res.status(201).json({ message: 'success', page: products.length, total: count, products });
 
@@ -265,7 +265,7 @@ export const getProductWithCategory = async (req, res, next) => {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
 
-    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ categoryId: req.params.categoryId, status: 'Active' });
+    const products = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' ')).find({ categoryId: req.params.categoryId, status: 'Active' }).populate('reviews');;
     const count = await ProductModel.estimatedDocumentCount();
     return res.status(201).json({ message: 'success', page: products.length, total: count, products });
 }
