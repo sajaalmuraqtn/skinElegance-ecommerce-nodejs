@@ -3,7 +3,7 @@ import { generalFieldValidation } from "../../Middleware/validation.js"
 
 export const createAdvertisement = Joi.object(
     {
-        name: Joi.string().min(3).max(25).required(),
+        name: Joi.string().min(3).max(50).required(),
         facebookLink: Joi.string(),
         instagramLink: Joi.string(),
         description: Joi.string().min(50).max(150000).required(),
@@ -18,7 +18,7 @@ export const createAdvertisement = Joi.object(
 
 export const updateAdvertisement = Joi.object(
     {
-        name: Joi.string().min(3).max(25),
+        name: Joi.string().min(3).max(50),
         facebookLink: Joi.string(),
         instagramLink: Joi.string(),
         description: Joi.string().min(50).max(150000),

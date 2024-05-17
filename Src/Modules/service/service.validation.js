@@ -3,7 +3,7 @@ import { generalFieldValidation } from "../../Middleware/validation.js"
 
 export const createService = Joi.object(
     {
-        name: Joi.string().min(3).max(25).required(),
+        name: Joi.string().min(3).max(50).required(),
         description: Joi.string().min(2).max(150000).required(),
         price: Joi.number().positive().required(),
         discount: Joi.number().positive().min(1),
@@ -15,7 +15,7 @@ export const createService = Joi.object(
 
 export const updateService = Joi.object(
     {
-        name: Joi.string().min(3).max(25),
+        name: Joi.string().min(3).max(50),
         description: Joi.string().min(2).max(150000),
         price: Joi.number().positive(),
         discount: Joi.number().positive().min(1),
