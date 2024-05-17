@@ -12,7 +12,7 @@ export const getAllProduct = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
 
     let queryObj = { ...req.query };
-    const execQuery = ['page', 'limit', 'skip', 'sort'];
+    const execQuery = ['page', 'limit', 'skip', 'sort', 'search', 'fields'];
     execQuery.map((ele) => {
         delete queryObj[ele];
     })
@@ -21,7 +21,14 @@ export const getAllProduct = async (req, res, next) => {
     queryObj = JSON.parse(queryObj);
 
     const mongooseQuery = ProductModel.find(queryObj).limit(limit).skip(skip);
-
+    if (req.query.search) {
+        mongooseQuery.find({
+            $or: [
+                { name: { $regex: req.query.search, $options: 'i' } },
+                { description: { $regex: req.query.search, $options: 'i' } }
+            ]
+        });
+    }
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
@@ -315,8 +322,7 @@ export const getSpecificProduct = async (req, res, next) => {
     const product = await ProductModel.findById(req.params.productId).populate('reviews');
     if (!product) {
         return next(new Error("product not found", { cause: 404 }));
-    }
-
+    } 
     return res.status(201).json({ message: 'success', product });
 }
 

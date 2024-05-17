@@ -100,7 +100,7 @@ export const getAllOrders = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
 
     let queryObj = { ...req.query };
-    const execQuery = ['page', 'limit', 'skip', 'sort'];
+    const execQuery = ['page', 'limit', 'skip', 'sort', 'search', 'fields'];
     execQuery.map((ele) => {
         delete queryObj[ele];
     })
@@ -108,8 +108,15 @@ export const getAllOrders = async (req, res, next) => {
     queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
     queryObj = JSON.parse(queryObj);
 
-    const mongooseQuery = OrderModel.find(queryObj).limit(limit).skip(skip);
-
+    const mongooseQuery = ProductModel.find(queryObj).limit(limit).skip(skip);
+    if (req.query.search) {
+        mongooseQuery.find({
+            $or: [
+                { name: { $regex: req.query.search, $options: 'i' } },
+                { description: { $regex: req.query.search, $options: 'i' } }
+            ]
+        });
+    }
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
@@ -122,7 +129,7 @@ export const getMyOrders = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
 
     let queryObj = { ...req.query };
-    const execQuery = ['page', 'limit', 'skip', 'sort'];
+    const execQuery = ['page', 'limit', 'skip', 'sort', 'search', 'fields'];
     execQuery.map((ele) => {
         delete queryObj[ele];
     })
@@ -130,8 +137,14 @@ export const getMyOrders = async (req, res, next) => {
     queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
     queryObj = JSON.parse(queryObj);
 
-    const mongooseQuery = OrderModel.find(queryObj).limit(limit).skip(skip);
-
+    const mongooseQuery = ProductModel.find(queryObj).limit(limit).skip(skip);
+    if (req.query.search) {
+        mongooseQuery.find({
+            $or: [
+                { status: { $regex: req.query.search, $options: 'i' } },
+            ]
+        });
+    }
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
