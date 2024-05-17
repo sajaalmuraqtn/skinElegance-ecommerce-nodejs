@@ -11,7 +11,7 @@ export const getCatagories = async (req, res, next) => {
     const { limit, skip } = pagination(req.query.page, req.query.limit);
 
     let queryObj = { ...req.query };
-    const execQuery = ['page', 'limit', 'skip', 'sort'];
+    const execQuery = ['page', 'limit', 'skip', 'sort', 'search', 'fields'];
     execQuery.map((ele) => {
         delete queryObj[ele];
     })
@@ -20,7 +20,13 @@ export const getCatagories = async (req, res, next) => {
     queryObj = JSON.parse(queryObj);
 
     const mongooseQuery = CategoryModel.find(queryObj).limit(limit).skip(skip);
-
+    if (req.query.search) {
+        mongooseQuery.find({
+            $or: [
+                { name: { $regex: req.query.search, $options: 'i' } }
+            ]
+        });
+    }
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }

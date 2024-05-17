@@ -56,7 +56,7 @@ export const GetAllCoupons = async (req, res, next) => {
   queryObj = queryObj.replace(/\b(gt|gte|lt|lte|in|nin|eq|neq)\b/g, match => `$${match}`);
   queryObj = JSON.parse(queryObj);
 
-  const mongooseQuery = ProductModel.find(queryObj).limit(limit).skip(skip);
+  const mongooseQuery = CouponModel.find(queryObj).limit(limit).skip(skip);
   if (req.query.search) {
       mongooseQuery.find({
           $or: [
