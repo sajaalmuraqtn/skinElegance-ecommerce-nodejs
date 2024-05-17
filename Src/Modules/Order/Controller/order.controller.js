@@ -112,8 +112,8 @@ export const getAllOrders = async (req, res, next) => {
     if (req.query.search) {
         mongooseQuery.find({
             $or: [
-                { name: { $regex: req.query.search, $options: 'i' } },
-                { description: { $regex: req.query.search, $options: 'i' } }
+                { status: { $regex: req.query.search, $options: 'i' } },
+                { city: { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }
@@ -141,7 +141,7 @@ export const getMyOrders = async (req, res, next) => {
     if (req.query.search) {
         mongooseQuery.find({
             $or: [
-                { status: { $regex: req.query.search, $options: 'i' } },
+                { status: { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }

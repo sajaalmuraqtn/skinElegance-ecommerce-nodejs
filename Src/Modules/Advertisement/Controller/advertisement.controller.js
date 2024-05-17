@@ -56,7 +56,8 @@ export const getActiveAdvertisement = async (req, res, next) => {
         mongooseQuery.find({
             $or: [
                 { name: { $regex: req.query.search, $options: 'i' } },
-                { description: { $regex: req.query.search, $options: 'i' } }
+                { description: { $regex: req.query.search, $options: 'i' } },
+                { city: { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }
