@@ -31,7 +31,7 @@ export const createOrder = async (req, res, next) => {
         if (coupon.usedBy.includes(req.user._id)) {
             return next(new Error(" coupon already used", { cause: 400 }));
         }
-        await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })
+        await CouponModel.updateOne({ _id:coupon._id}, { $addToSet: { usedBy: req.user._id } })
     }
 
     let subTotals = 0;

@@ -16,7 +16,7 @@ const CouponSchema = new Schema({
 
     usedBy: [
         {
-           _id: {type: Types.ObjectId, ref: 'User'}
+        type: Types.ObjectId, ref: 'User'
         }
     ],
     isDeleted: {
