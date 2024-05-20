@@ -31,6 +31,7 @@ export const createOrder = async (req, res, next) => {
         if (coupon.usedBy.includes(req.user._id)) {
             return next(new Error(" coupon already used", { cause: 400 }));
         }
+        await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
 
     let subTotals = 0;
@@ -39,14 +40,14 @@ export const createOrder = async (req, res, next) => {
         const checkProduct = await ProductModel.findOne({
             _id: product.productId,
             stock: { $gte: product.quantity },
-            status:"Active",
-            expiredDate: { $gt:currentDate } ,
-            isDeleted:'false'
-        
+            status: "Active",
+            expiredDate: { $gt: currentDate },
+            isDeleted: 'false'
+
         })
         console.log(checkProduct);
         if (!checkProduct) {
-            return next(new Error( `product '${product.name}' quantity not available`, { cause: 400 }));
+            return next(new Error(`product '${product.name}' quantity not available`, { cause: 400 }));
         }
         product = product.toObject();
         product.name = checkProduct.name;
@@ -82,9 +83,7 @@ export const createOrder = async (req, res, next) => {
         lastName: req.body.lastName,
         note: req.body.note ?? ''
     })
-    if (req.body.coupon) {
-        await CouponModel.updateOne({ _id: req.body.coupon._id }, { $addToSet: { usedBy: req.user._id } })
-    }
+
     for (const product of req.body.products) {
         await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity, number_sellers: 1 } })
     }
