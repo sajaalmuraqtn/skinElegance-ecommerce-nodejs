@@ -18,7 +18,7 @@ export const createOrder = async (req, res, next) => {
     req.body.products = cart.products;
     const currentDate = new Date();
 
-    if (req.body.couponName!=='couponName') {
+    if (req.body.couponName !== 'couponName') {
         const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         if (!coupon) {
             return next(new Error("coupon not found", { cause: 404 }));
@@ -31,7 +31,7 @@ export const createOrder = async (req, res, next) => {
         if (coupon.usedBy.includes(req.user._id)) {
             return next(new Error(" coupon already used", { cause: 400 }));
         }
-        await CouponModel.updateOne({ _id:coupon._id}, { $addToSet: { usedBy: req.user._id } })
+        await CouponModel.updateOne({ _id: coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
 
     let subTotals = 0;
@@ -77,7 +77,7 @@ export const createOrder = async (req, res, next) => {
         finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
         address: req.body.address,
         phoneNumber: req.body.phoneNumber,
-        couponName: req.body.couponName!=='couponName'?req.body.couponName:'',
+        couponName: req.body.couponName !== 'couponName' ? req.body.couponName : '',
         city: req.body.city,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -112,7 +112,8 @@ export const getAllOrders = async (req, res, next) => {
         mongooseQuery.find({
             $or: [
                 { status: { $regex: req.query.search, $options: 'i' } },
-                { city: { $regex: req.query.search, $options: 'i' } }
+                { city: { $regex: req.query.search, $options: 'i' } },
+                { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }

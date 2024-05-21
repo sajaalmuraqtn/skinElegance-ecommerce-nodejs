@@ -23,7 +23,9 @@ export const getCatagories = async (req, res, next) => {
     if (req.query.search) {
         mongooseQuery.find({
             $or: [
-                { name: { $regex: req.query.search, $options: 'i' } }
+                { name: { $regex: req.query.search, $options: 'i' } },
+                { 'createdByUser.userName': { $regex: req.query.search, $options: 'i' } },
+                { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }

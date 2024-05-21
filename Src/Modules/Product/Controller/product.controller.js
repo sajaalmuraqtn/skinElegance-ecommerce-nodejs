@@ -25,7 +25,9 @@ export const getAllProduct = async (req, res, next) => {
         mongooseQuery.find({
             $or: [
                 { name: { $regex: req.query.search, $options: 'i' } },
-                { description: { $regex: req.query.search, $options: 'i' } }
+                { description: { $regex: req.query.search, $options: 'i' } },
+                { 'createdByUser.userName': { $regex: req.query.search, $options: 'i' } },
+                { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }
