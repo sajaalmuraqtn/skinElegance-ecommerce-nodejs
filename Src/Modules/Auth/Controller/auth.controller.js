@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import UserModel from '../../../../DB/model/user.model.js'
 import cloudinary from '../../../Services/cloudinary.js';
 import { sendEmail } from '../../../Services/email.js';
+import logo from ''
 import { customAlphabet, nanoid } from 'nanoid';
 import slugify from 'slugify';
 
@@ -181,7 +182,7 @@ export const signUp = async (req, res,next) => {
                                                                         align="left">
                                                                         <div
                                                                             style="cursor:auto;color:#737F8D;font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:16px;line-height:24px;text-align:center;">
-                                                                            <p><img src="https://res-console.cloudinary.com/dnkdk0ddu/media_explorer_thumbnails/f5a4dfb2c8843f43a338602443e7f2fb/detailed"
+                                                                            <p><img src="../../../Services/logo.png"
                                                                                     alt="Party Wumpus" title="None"
                                                                                     width="300" style="height: auto;"></p>
                                                                             <div style="text-align:start;">
