@@ -27,9 +27,9 @@ export const signUp = async (req, res,next) => {
       
     const slug = slugify(userName);
     const token = jwt.sign({ email }, process.env.CONFIRMEMAILSECRET);
-    await sendEmail(email, "Confirm Email",` <!DOCTYPE html>
+    await sendEmail(email, "Confirm Email", `
+    <!DOCTYPE html>
     <html>
-    
     <head>
         <title></title>
         <!--[if !mso]><!-- -->
@@ -37,61 +37,20 @@ export const signUp = async (req, res,next) => {
         <!--<![endif]-->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style type="text/css">
-            #outlook a {
-                padding: 0;
-            }
-    
-            .ReadMsgBody {
-                width: 100%;
-            }
-    
-            .ExternalClass {
-                width: 100%;
-            }
-    
-            .ExternalClass * {
-                line-height: 100%;
-            }
-    
-            body {
-                margin: 0;
-                padding: 0;
-                -webkit-text-size-adjust: 100%;
-                -ms-text-size-adjust: 100%;
-                background-color: #fafafa;
-            }
-    
-            table,
-            td {
-                border-collapse: collapse;
-                mso-table-lspace: 0pt;
-                mso-table-rspace: 0pt;
-            }
-    
-            img {
-                border: 0;
-                height: auto;
-                line-height: 100%;
-                outline: none;
-                text-decoration: none;
-                -ms-interpolation-mode: bicubic;
-            }
-    
-            p {
-                display: block;
-                margin: 13px 0;
-            }
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
         </style>
         <!--[if !mso]><!-->
         <style type="text/css">
             @media only screen and (max-width:480px) {
-                @-ms-viewport {
-                    width: 320px;
-                }
-    
-                @viewport {
-                    width: 320px;
-                }
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
             }
         </style>
         <!--<![endif]-->
@@ -105,12 +64,9 @@ export const signUp = async (req, res,next) => {
         <![endif]-->
         <!--[if lte mso 11]>
         <style type="text/css">
-            .outlook-group-fix {
-                width:100% !important;
-            }
+            .outlook-group-fix { width:100% !important; }
         </style>
         <![endif]-->
-    
         <!--[if !mso]><!-->
         <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
         <style type="text/css">
@@ -119,14 +75,10 @@ export const signUp = async (req, res,next) => {
         <!--<![endif]-->
         <style type="text/css">
             @media only screen and (min-width:480px) {
-                .mj-column-per-100,
-                * [aria-labelledby="mj-column-per-100"] {
-                    width: 100% !important;
-                }
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
             }
         </style>
     </head>
-    
     <body style="background-color: #fafafa;">
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
             <tr>
@@ -147,7 +99,7 @@ export const signUp = async (req, res,next) => {
                                                                         <tr>
                                                                             <td style="word-break:break-word;font-size:0px;padding:0px 0px 20px;" align="left">
                                                                                 <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:16px;line-height:24px;text-align:center;">
-                                                                                    <p><img src="https://res-console.cloudinary.com/dnkdk0ddu/media_explorer_thumbnails/125554ccc56e8b3965b04ed77c72b29d/detailed" alt="Party Wumpus" title="None" width="300" style="height: auto;"></p>
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="skin elegance logo" title="Party Wumpus" width="300" style="height: auto;"></p>
                                                                                     <div style="text-align:start;">
                                                                                         <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 20px;color: #4F545C;letter-spacing: 0.27px;">Hi ${req.body.userName}</h2>
                                                                                         <p>Welcome to Skin Elegance! We're thrilled to have you join our community of skin care enthusiasts. To start exploring the best in skin care products, please verify your email address by clicking the link below.</p>
@@ -191,9 +143,8 @@ export const signUp = async (req, res,next) => {
     </tr>
     </table>
     </body>
-    
-    </html>`
-    );
+    </html>
+    `);
     
     const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id },slug,phoneNumber,address });
     if (!createUser) {
