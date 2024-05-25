@@ -182,7 +182,7 @@ export const signUp = async (req, res,next) => {
                                                                         align="left">
                                                                         <div
                                                                             style="cursor:auto;color:#737F8D;font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:16px;line-height:24px;text-align:center;">
-                                                                            <p><img src="../../../Services/logo.png"
+                                                                            <p><img src='https://res-console.cloudinary.com/dnkdk0ddu/media_explorer_thumbnails/125554ccc56e8b3965b04ed77c72b29d/detailed'
                                                                                     alt="Party Wumpus" title="None"
                                                                                     width="300" style="height: auto;"></p>
                                                                             <div style="text-align:start;">
