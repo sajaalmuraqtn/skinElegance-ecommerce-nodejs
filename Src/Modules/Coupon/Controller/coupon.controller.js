@@ -32,6 +32,141 @@ export const CreateCoupon = async (req, res, next) => {
   
   req.body.image = { secure_url, public_id };
   const coupon = await CouponModel.create(req.body);
+  if (coupon.status === "Active") {
+    const users = await UserModel.find({ confirmEmail: true, role: 'User' });
+    for (let index = 0; index < users.length; index++) {
+        await sendEmail(users[index].email, `New Coupon Alert! ✨🔥`, `<!DOCTYPE html>
+<html>
+<head>
+    <!--[if !mso]><!-- -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+        #outlook a { padding: 0; }
+        .ReadMsgBody { width: 100%; }
+        .ExternalClass { width: 100%; }
+        .ExternalClass * { line-height: 100%; }
+        body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+        table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+        p { display: block; margin: 13px 0; }
+    </style>
+    <!--[if !mso]><!-->
+    <style type="text/css">
+        @media only screen and (max-width:480px) {
+            @-ms-viewport { width: 320px; }
+            @viewport { width: 320px; }
+        }
+    </style>
+    <!--<![endif]-->
+    <!--[if mso]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG/>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+    <!--[if lte mso 11]>
+    <style type="text/css">
+        .outlook-group-fix { width:100% !important; }
+    </style>
+    <![endif]-->
+    <!--[if !mso]><!-->
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+    <style type="text/css">
+        @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+    </style>
+    <!--<![endif]-->
+    <style type="text/css">
+        @media only screen and (min-width:480px) {
+            .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+        }
+    </style>
+</head>
+<body style="background-color: #fafafa;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+        <tr>
+            <td>
+                <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                        <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                            <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                            <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                <div style="text-align:start;">
+                                                                                    <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #46D7D4;letter-spacing: 0.27px;">Hi ${users[index].userName},</h2>
+                                                                                    <p>We're excited to announce a brand new coupon available for all products on our website! Enjoy amazing discounts on your favorite items.</p>
+                                                                                    <p>Don't miss out on this limited-time offer. Use the coupon code <strong>${coupon.name}</strong> at checkout and save ${coupon.amount} on your purchase.</p>
+                                                                                    <table style="width:100%; border-collapse: collapse;">
+                                                                                        <tr>
+                                                                                            <td style="padding: 10px;">
+                                                                                                <img src="${coupon.image.secure_url}" alt="${coupon.slug}" style="max-width: 300px;">
+                                                                                            </td>
+                                                                                            <td style="padding: 10px;">
+                                                                                                <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif; font-weight: 500; font-size: 16px;color: #46D7D4;">${coupon.name}</h3>
+                                                                                                <p style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif; font-size: 14px; color:black;">Discount: %${coupon.amount}</p>
+                                                                                                <p style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif; font-size: 14px; color:black;">Expires on: ${coupon.expiredDate.split('T')[0]}</p>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="word-break:break-word;font-size:0px;padding:10px 20px;" align="center">
+                                                                            <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate;" align="center" border="0">
+                                                                                <tbody>
+                                                                                    <tr>
+                                                                                        <td style="border:none;border-radius:3px;color:white;cursor:auto;padding:12px 18px;" align="center" valign="middle" bgcolor="#46D7D4">
+                                                                                            <a href="https://skinelegance-ecommerce.onrender.com" style="text-decoration:none;line-height:100%;background:#46D7D4;color:white;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:14px;font-weight:normal;text-transform:none;margin:0px;" target="_blank">
+                                                                                                Shop Now
+                                                                                            </a>
+                                                                                            
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div><!--[if mso | IE]>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            <![endif]-->
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </td>
+</tr>
+</table>
+</body>
+</html>    
+`);
+    }
+}
+
   return res.status(201).json({ message: 'success', coupon });
 }
 
