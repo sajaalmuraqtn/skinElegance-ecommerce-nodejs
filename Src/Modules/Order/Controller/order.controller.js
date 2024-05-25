@@ -45,7 +45,6 @@ export const createOrder = async (req, res, next) => {
             isDeleted: 'false'
 
         })
-        console.log(checkProduct);
         if (!checkProduct) {
             return next(new Error(`product '${product.name}' quantity not available`, { cause: 400 }));
         }

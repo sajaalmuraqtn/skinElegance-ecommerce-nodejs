@@ -44,8 +44,6 @@ export const removeItem = async (req, res, next) => {
     let matched = false;
     for (let index = 0; index < Favorite.products.length; index++) {
         if (Favorite.products[index].productId == productId) {
-            console.log(Favorite.products[index].productId);
-            console.log(matched);
             matched = true;
             break;
         }
