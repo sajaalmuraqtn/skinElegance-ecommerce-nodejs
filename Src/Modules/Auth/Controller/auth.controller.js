@@ -27,8 +27,7 @@ export const signUp = async (req, res,next) => {
       
     const slug = slugify(userName);
     const token = jwt.sign({ email }, process.env.CONFIRMEMAILSECRET);
-    await sendEmail(email, "Confirm Email", `
-    <!DOCTYPE html>
+    await sendEmail(email, "Confirm Email", `<!DOCTYPE html>
     <html>
     <head>
         <title></title>
@@ -87,33 +86,33 @@ export const signUp = async (req, res,next) => {
                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                             <tbody>
                                 <tr>
-                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:40px 0px;">
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
                                         <div style="margin:0px auto;max-width:640px;background:#fafafa;">
                                             <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:40px 70px;">
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
                                                             <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
                                                                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                                                                     <tbody>
                                                                         <tr>
-                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 20px;" align="left">
-                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:16px;line-height:24px;text-align:center;">
-                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="skin elegance logo" title="Party Wumpus" width="300" style="height: auto;"></p>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
                                                                                     <div style="text-align:start;">
-                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 20px;color: #4F545C;letter-spacing: 0.27px;">Hi ${req.body.userName}</h2>
-                                                                                        <p>Welcome to Skin Elegance! We're thrilled to have you join our community of skin care enthusiasts. To start exploring the best in skin care products, please verify your email address by clicking the link below.</p>
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${req.body.userName}</h2>
+                                                                                        <p>Welcome to Skin Elegance Shop! We're thrilled to have you join our community of skin care enthusiasts. To start exploring the best in skin care products, please verify your email address by clicking the link below.</p>
                                                                                     </div>
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
-                                                                            <td style="word-break:break-word;font-size:0px;padding:10px 25px;" align="center">
+                                                                            <td style="word-break:break-word;font-size:0px;padding:10px 20px;" align="center">
                                                                                 <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate;" align="center" border="0">
                                                                                     <tbody>
                                                                                         <tr>
-                                                                                            <td style="border:none;border-radius:3px;color:white;cursor:auto;padding:15px 19px;" align="center" valign="middle" bgcolor="#46D7D4">
-                                                                                                <a href="${req.protocol}://${req.headers.host}/auth/confirmEmail/${token}" style="text-decoration:none;line-height:100%;background:#46D7D4;color:white;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:15px;font-weight:normal;text-transform:none;margin:0px;" target="_blank">
+                                                                                            <td style="border:none;border-radius:3px;color:white;cursor:auto;padding:12px 18px;" align="center" valign="middle" bgcolor="#46D7D4">
+                                                                                                <a href="${req.protocol}://${req.headers.host}/auth/confirmEmail/${token}" style="text-decoration:none;line-height:100%;background:#46D7D4;color:white;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:14px;font-weight:normal;text-transform:none;margin:0px;" target="_blank">
                                                                                                     Verify Email
                                                                                                 </a>
                                                                                             </td>
@@ -143,7 +142,7 @@ export const signUp = async (req, res,next) => {
     </tr>
     </table>
     </body>
-    </html>
+    </html>    
     `);
     
     const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id },slug,phoneNumber,address });
@@ -205,9 +204,109 @@ export const sendCode = async (req, res,next) => {
     }
     let code=customAlphabet('123456789abcdzABCDZ',4);
     code=code();
-    
-    const html=`<h2>reset code : ${code}</h2>`
-    sendEmail(email,'reset Password',html);
+    await sendEmail(email, "Reset Password Code", `<!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${user.userName}</h2>
+                                                                                        <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Reset Code : ${code}</h1>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
     const user = await UserModel.findOneAndUpdate({email},{sendCode:code},{new:true});    
     return res.status(200).json({ message: 'success'});
 }
@@ -243,7 +342,109 @@ export const changePassword  = async (req, res,next) => {
 
     // Save the updated user
     await user.save();
-
+    await sendEmail(user.email, "Change Password Successfully", `<!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${user.userName}</h2>
+                                                                                        <p>Your Password Changed Successfully</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
     return res.status(200).json({ message: 'success'});
 }
 
@@ -268,6 +469,109 @@ export const forgotPassword = async (req, res,next) => {
     user.sendCode=null;
     user.changePasswordTime=Date.now();
     user.save();
+    await sendEmail(email, "Change Password Successfully", `<!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${user.userName}</h2>
+                                                                                        <p>Your Password Changed Successfully</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
     return res.status(200).json({ message: 'success'})
 }
 
@@ -292,9 +596,112 @@ export const adminSignIn = async (req, res,next) => {
         // {expiresIn:'5m'}
     );
     const refreshToken = await jwt.sign({ id: user._id, role: user.role, status: user.status,image:user.image,userName:user.userName  }, process.env.LOGINSECRET, { expiresIn:60*60*24*30 });
-
+    await sendEmail(email, "Logged In Successfully", `<!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${user.userName} Admin</h2>
+                                                                                        <p>Welcome to Skin Elegance DashBoard! We're thrilled to have you join our community of skin care enthusiasts. To start exploring the best in skin care products</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
     return res.status(201).json({ message: 'success', token, refreshToken })
 }
+
 export const signIn = async (req, res,next) => {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email: email });
@@ -313,7 +720,109 @@ export const signIn = async (req, res,next) => {
         // {expiresIn:'5m'}
     );
     const refreshToken = await jwt.sign({ id: user._id, role: user.role, status: user.status,image:user.image,userName:user.userName  }, process.env.LOGINSECRET, { expiresIn:60*60*24*30 });
-
+    await sendEmail(email, "Logged In Successfully", `<!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${user.userName}</h2>
+                                                                                        <p>Welcome to Skin Elegance Shop! We're thrilled to have you join our community of skin care enthusiasts. To start exploring the best in skin care products</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                        
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
     return res.status(201).json({ message: 'success', token, refreshToken })
 }
 
