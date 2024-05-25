@@ -204,6 +204,7 @@ export const sendCode = async (req, res,next) => {
     }
     let code=customAlphabet('123456789abcdzABCDZ',4);
     code=code();
+    const user = await UserModel.findOneAndUpdate({email},{sendCode:code},{new:true});    
     await sendEmail(email, "Reset Password Code", `<!DOCTYPE html>
     <html>
     <head>
@@ -307,7 +308,6 @@ export const sendCode = async (req, res,next) => {
     </body>
     </html>    
     `);
-    const user = await UserModel.findOneAndUpdate({email},{sendCode:code},{new:true});    
     return res.status(200).json({ message: 'success'});
 }
 
