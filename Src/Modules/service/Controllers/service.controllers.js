@@ -5,6 +5,7 @@ import { pagination } from "../../../Services/pagination.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import ServiceModel from "../../../../DB/model/service.model.js";
 import AdvertisementModel from "../../../../DB/model/advertisement.model.js";
+import { sendEmail } from "../../../Services/email.js";
 
 export const getAllServices = async (req, res, next) => {
     const services = await ServiceModel.find({advertisementId: req.params.advertisementId});

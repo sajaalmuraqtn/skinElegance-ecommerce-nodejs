@@ -4,6 +4,7 @@ import AdvertisementModel from "../../../../DB/model/advertisement.model.js";
 import { pagination } from "../../../Services/pagination.js";
 import ServiceModel from "../../../../DB/model/service.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
+import { sendEmail } from "../../../Services/email.js";
 
 export const getAllAdvertisement = async (req, res, next) => {
 

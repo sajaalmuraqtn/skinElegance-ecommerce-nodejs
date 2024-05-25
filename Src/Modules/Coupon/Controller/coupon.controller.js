@@ -3,6 +3,7 @@ import CouponModel from "../../../../DB/model/coupon.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
 import { pagination } from "../../../Services/pagination.js";
+import { sendEmail } from "../../../Services/email.js";
 
 export const CreateCoupon = async (req, res, next) => {
   req.body.name = req.body.name.toLowerCase();

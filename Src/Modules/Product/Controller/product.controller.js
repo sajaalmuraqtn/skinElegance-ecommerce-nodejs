@@ -7,6 +7,7 @@ import { asyncHandler } from "../../../Services/errorHandling.js";
 import { pagination } from "../../../Services/pagination.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import { confirmEmail } from "../../Auth/Controller/auth.controller.js";
+import { sendEmail } from "../../../Services/email.js";
 
 export const getAllProduct = async (req, res, next) => {
 
