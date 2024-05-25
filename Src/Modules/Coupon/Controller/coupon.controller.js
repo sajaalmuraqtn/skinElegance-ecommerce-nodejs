@@ -33,7 +33,7 @@ export const CreateCoupon = async (req, res, next) => {
   
   req.body.image = { secure_url, public_id };
   const coupon = await CouponModel.create(req.body);
-  if (coupon.status === "Active") {
+ 
     const users = await UserModel.find({ confirmEmail: true, role: 'User' });
     for (let index = 0; index < users.length; index++) {
         await sendEmail(users[index].email, `New Coupon Alert! ✨🔥`, `<!DOCTYPE html>
@@ -166,7 +166,7 @@ export const CreateCoupon = async (req, res, next) => {
 </html>    
 `);
     }
-}
+
 
   return res.status(201).json({ message: 'success', coupon });
 }
