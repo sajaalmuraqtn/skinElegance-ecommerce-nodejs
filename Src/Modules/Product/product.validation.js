@@ -18,17 +18,17 @@ export const createProduct = Joi.object(
 
 export const updateProduct = Joi.object(
     {
-        name: Joi.string().min(3).max(50),
-        description: Joi.string().min(2).max(150000),
-        stock: Joi.number().integer().positive(),
-        price: Joi.number().positive(),
-        size: Joi.string(),
-        discount: Joi.number().positive().min(1),
+        name: Joi.string().min(3).max(50).optional().allow(''),
+        description: Joi.string().min(2).max(150000).optional().allow(''),
+        stock: Joi.number().integer().positive().optional().allow(''),
+        price: Joi.number().positive().optional().allow(''),
+        size: Joi.string().optional().allow(''),
+        discount: Joi.number().positive().min(1).optional().allow(''),
         file: generalFieldValidation.file,
-        status: Joi.string().valid('Active', 'Inactive'),
-        categoryId: Joi.string().min(24).max(24),
+        status: Joi.string().valid('Active', 'Inactive').optional().allow(''),
+        categoryId: Joi.string().min(24).max(24).optional().allow(''),
         // subCategoryId: Joi.string().min(24).max(24),
-        expiredDate: Joi.date().greater('now'),
+        expiredDate: Joi.date().greater('now').optional().allow(''),
         productId: Joi.string().min(24).max(24).required()
     }
 )

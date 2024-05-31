@@ -1,16 +1,15 @@
 import Joi from "joi"
-import { generalFieldValidation } from "../../Middleware/validation.js"
- 
+  
 export const createOrder= Joi.object(
     {
         firstName:Joi.string().min(3).max(30).required(),
         lastName:Joi.string().min(3).max(30).required(),
         couponName: Joi.string().min(3).max(30), 
         phoneNumber: Joi.string().min(10).max(10),
-        note: Joi.string().min(10).max(100),
+        note: Joi.string().min(10).max(100).optional().allow(''),
         address: Joi.string().min(10).max(100),
         paymentType: Joi.string().required(),
-        cardId: Joi.string().min(24).max(24),
+        cardId: Joi.string().min(24).max(24).optional().allow(''),
         city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala').required()
      }
    )
