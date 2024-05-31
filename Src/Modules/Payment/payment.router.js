@@ -7,7 +7,7 @@ import { asyncHandler } from "../../Services/errorHandling.js";
 const router=Router();
 
 router.post('/AddPayment' ,auth(roles.User),validation(validators.addPayment) ,asyncHandler(PaymentMethodController.createPaymentMethod));
-router.get('/:paymentMethodId' ,auth(Object.values(roles)),validation(validators.getSpecificPaymentMethod) ,asyncHandler(PaymentMethodController.getSpecificPaymentMethod));
+router.get('/getSpecificPaymentMethod/:paymentMethodId' ,auth(Object.values(roles)),validation(validators.getSpecificPaymentMethod) ,asyncHandler(PaymentMethodController.getSpecificPaymentMethod));
 router.get('/getPaymentMethods' ,auth(roles.User) ,asyncHandler(PaymentMethodController.getPaymentMethod));
 
 export default router;
