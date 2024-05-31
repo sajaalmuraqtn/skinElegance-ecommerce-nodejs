@@ -36,8 +36,7 @@ export const createPaymentMethod = async (req, res, next) => {
 
 export const getPaymentMethod = async (req, res, next) => {
     const PaymentMethods = await PaymentMethodModel.find({
-        'createdByUser._id': req.user._id,
-        'cardDetails.cardNumber': req.body.cardNumber
+        'createdByUser._id': req.user._id 
     });
      
     return res.status(201).json({ message: 'success', PaymentMethods }) ;
