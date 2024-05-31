@@ -49,8 +49,7 @@ const OrderSchema = new Schema({
     }, cardDetails: {
         cardNumber: {
             type: String,
-            required: true,
-            unique: true,
+             unique: true,
             trim: true
         },
         cardType: {
