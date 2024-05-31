@@ -40,7 +40,7 @@ export const signUp = async (req, res,next) => {
             .ReadMsgBody { width: 100%; }
             .ExternalClass { width: 100%; }
             .ExternalClass * { line-height: 100%; }
-            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
             table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
             img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
             p { display: block; margin: 13px 0; }
@@ -78,7 +78,7 @@ export const signUp = async (req, res,next) => {
             }
         </style>
     </head>
-    <body style="background-color: #fafafa;">
+    <body style="background-color: #fafafa; overflow: hidden;">
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
             <tr>
                 <td>
@@ -142,7 +142,7 @@ export const signUp = async (req, res,next) => {
     </tr>
     </table>
     </body>
-    </html>    
+    </html>
     `);
     
     const createUser = await UserModel.create({ userName, email, password: hashPassword, image: { secure_url, public_id },slug,phoneNumber,address });
@@ -218,7 +218,7 @@ export const sendCode = async (req, res,next) => {
             .ReadMsgBody { width: 100%; }
             .ExternalClass { width: 100%; }
             .ExternalClass * { line-height: 100%; }
-            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
             table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
             img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
             p { display: block; margin: 13px 0; }
@@ -256,11 +256,11 @@ export const sendCode = async (req, res,next) => {
             }
         </style>
     </head>
-    <body style="background-color: #fafafa;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
             <tr>
                 <td>
-                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                             <tbody>
                                 <tr>
@@ -284,7 +284,6 @@ export const sendCode = async (req, res,next) => {
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
-                                                                        
                                                                     </tbody>
                                                                 </table>
                                                             </div><!--[if mso | IE]>
@@ -308,6 +307,7 @@ export const sendCode = async (req, res,next) => {
     </body>
     </html>    
     `);
+    
     return res.status(200).json({ message: 'success'});
 }
 
@@ -342,7 +342,7 @@ export const changePassword  = async (req, res,next) => {
 
     // Save the updated user
     await user.save();
-    await sendEmail(user.email, "Change Password Successfully", `<!DOCTYPE html>
+    await sendEmail(email, "Change Password Successfully", `<!DOCTYPE html>
     <html>
     <head>
         <title></title>
@@ -355,7 +355,7 @@ export const changePassword  = async (req, res,next) => {
             .ReadMsgBody { width: 100%; }
             .ExternalClass { width: 100%; }
             .ExternalClass * { line-height: 100%; }
-            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
             table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
             img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
             p { display: block; margin: 13px 0; }
@@ -393,11 +393,11 @@ export const changePassword  = async (req, res,next) => {
             }
         </style>
     </head>
-    <body style="background-color: #fafafa;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
             <tr>
                 <td>
-                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                             <tbody>
                                 <tr>
@@ -421,7 +421,6 @@ export const changePassword  = async (req, res,next) => {
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
-                                                                        
                                                                     </tbody>
                                                                 </table>
                                                             </div><!--[if mso | IE]>
@@ -445,6 +444,7 @@ export const changePassword  = async (req, res,next) => {
     </body>
     </html>    
     `);
+    
     return res.status(200).json({ message: 'success'});
 }
 
@@ -482,7 +482,7 @@ export const forgotPassword = async (req, res,next) => {
             .ReadMsgBody { width: 100%; }
             .ExternalClass { width: 100%; }
             .ExternalClass * { line-height: 100%; }
-            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
             table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
             img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
             p { display: block; margin: 13px 0; }
@@ -520,11 +520,11 @@ export const forgotPassword = async (req, res,next) => {
             }
         </style>
     </head>
-    <body style="background-color: #fafafa;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
             <tr>
                 <td>
-                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                             <tbody>
                                 <tr>
@@ -548,7 +548,6 @@ export const forgotPassword = async (req, res,next) => {
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
-                                                                        
                                                                     </tbody>
                                                                 </table>
                                                             </div><!--[if mso | IE]>
@@ -572,6 +571,7 @@ export const forgotPassword = async (req, res,next) => {
     </body>
     </html>    
     `);
+    
     return res.status(200).json({ message: 'success'})
 }
 
@@ -609,7 +609,7 @@ export const adminSignIn = async (req, res,next) => {
             .ReadMsgBody { width: 100%; }
             .ExternalClass { width: 100%; }
             .ExternalClass * { line-height: 100%; }
-            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
             table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
             img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
             p { display: block; margin: 13px 0; }
@@ -647,11 +647,11 @@ export const adminSignIn = async (req, res,next) => {
             }
         </style>
     </head>
-    <body style="background-color: #fafafa;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
             <tr>
                 <td>
-                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                             <tbody>
                                 <tr>
@@ -675,7 +675,6 @@ export const adminSignIn = async (req, res,next) => {
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
-                                                                        
                                                                     </tbody>
                                                                 </table>
                                                             </div><!--[if mso | IE]>
@@ -697,8 +696,8 @@ export const adminSignIn = async (req, res,next) => {
     </tr>
     </table>
     </body>
-    </html>    
-    `);
+    </html>`);
+    
     return res.status(201).json({ message: 'success', token, refreshToken })
 }
 
@@ -733,7 +732,7 @@ export const signIn = async (req, res,next) => {
             .ReadMsgBody { width: 100%; }
             .ExternalClass { width: 100%; }
             .ExternalClass * { line-height: 100%; }
-            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
             table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
             img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
             p { display: block; margin: 13px 0; }
@@ -771,16 +770,16 @@ export const signIn = async (req, res,next) => {
             }
         </style>
     </head>
-    <body style="background-color: #fafafa;">
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="background-color: #fafafa; overflow: hidden;">
             <tr>
                 <td>
-                    <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                             <tbody>
                                 <tr>
                                     <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
-                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
                                             <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                                                 <tbody>
                                                     <tr>
@@ -799,7 +798,6 @@ export const signIn = async (req, res,next) => {
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
-                                                                        
                                                                     </tbody>
                                                                 </table>
                                                             </div><!--[if mso | IE]>
@@ -823,6 +821,8 @@ export const signIn = async (req, res,next) => {
     </body>
     </html>    
     `);
+    
+    
     return res.status(201).json({ message: 'success', token, refreshToken })
 }
 

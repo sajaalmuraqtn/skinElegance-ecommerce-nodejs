@@ -44,7 +44,36 @@ const OrderSchema = new Schema({
         default: ''
     },
     paymentType: {
-        type: String, default: 'cash'
+        type: String, default: 'cash',
+        enum: ['cash', 'visa' ] 
+    }, cardDetails: {
+        cardNumber: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true
+        },
+        cardType: {
+            type: String,
+            default:'visa' 
+        },
+        expiryDate: {
+            type: String,
+             trim: true,
+            match: /^(0[1-9]|1[0-2])\/\d{2}$/
+        },
+        cvc: {
+            type: String,
+             trim: true,
+            match: /^[0-9]{3,4}$/
+        },
+        cardholderName: {
+            type: String,
+             trim: true
+        } ,
+        cardId:{
+            type: Types.ObjectId, ref: 'PaymentMethod' 
+        }
     },
     status: {
         type: String, default: 'pending',

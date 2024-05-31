@@ -6,6 +6,7 @@ import UserModel from "../../../../DB/model/user.model.js";
 import moment from 'moment';
 import { pagination } from "../../../Services/pagination.js";
 import ContactModel from "../../../../DB/model/contact.model.js";
+import PaymentMethodModel from "../../../../DB/model/paymentmethod.model.js";
 
 export const createOrder = async (req, res, next) => {
     const cart = await CartModel.findOne({ userId: req.user._id });
@@ -70,18 +71,47 @@ export const createOrder = async (req, res, next) => {
     if (req.body.note) {
         req.body.note = user.phoneNumber;
     }
-    const order = await OrderModel.create({
-        userId: req.user._id,
-        products: finalProductList,
-        finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
-        address: req.body.address,
-        phoneNumber: req.body.phoneNumber,
-        couponName: req.body.couponName !== 'couponName' ? req.body.couponName : '',
-        city: req.body.city,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        note: req.body.note ?? ''
-    })
+    let order;
+    if (req.body.paymentType !== 'cash') {
+        const card = await PaymentMethodModel.findById(req.body.cardId);
+        const cardDetails = {
+            cardNumber: card.cardNumber,
+            cardType: card.cardType,
+            expiryDate: card.expiryDate,
+            cvc: card.cvc,
+            cardholderName: card.cardholderName,
+            cardId: card._id
+        }
+          order = await OrderModel.create({
+            userId: req.user._id,
+            products: finalProductList,
+            finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
+            address: req.body.address,
+            phoneNumber: req.body.phoneNumber,
+            couponName: req.body.couponName !== 'couponName' ? req.body.couponName : '',
+            city: req.body.city,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            note: req.body.note ?? '',
+            paymentType: 'visa',
+            cardDetails
+        });
+
+    }
+    else {
+          order = await OrderModel.create({
+            userId: req.user._id,
+            products: finalProductList,
+            finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
+            address: req.body.address,
+            phoneNumber: req.body.phoneNumber,
+            couponName: req.body.couponName !== 'couponName' ? req.body.couponName : '',
+            city: req.body.city,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            note: req.body.note ?? '',
+        });
+    }
 
     for (const product of req.body.products) {
         await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity, number_sellers: 1 } })
@@ -90,7 +120,191 @@ export const createOrder = async (req, res, next) => {
         products: [],
         totalPrice: 0
     })
+    // await sendEmail(email, "Confirm Email", `
+    // <!DOCTYPE html>
+    // <html>
+    // <head>
+    //     <title></title>
+    //     <!--[if !mso]><!-- -->
+    //     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    //     <!--<![endif]-->
+    //     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    //     <style type="text/css">
+    //         #outlook a { padding: 0; }
+    //         .ReadMsgBody { width: 100%; }
+    //         .ExternalClass { width: 100%; }
+    //         .ExternalClass * { line-height: 100%; }
+    //         body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
+    //         table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    //         img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+    //         p { display: block; margin: 13px 0; }
+    //     </style>
+    //     <!--[if !mso]><!-->
+    //     <style type="text/css">
+    //         @media only screen and (max-width:480px) {
+    //             @-ms-viewport { width: 320px; }
+    //             @viewport { width: 320px; }
+    //         }
+    //     </style>
+    //     <!--<![endif]-->
+    //     <!--[if mso]>
+    //     <xml>
+    //         <o:OfficeDocumentSettings>
+    //             <o:AllowPNG/>
+    //             <o:PixelsPerInch>96</o:PixelsPerInch>
+    //         </o:OfficeDocumentSettings>
+    //     </xml>
+    //     <![endif]-->
+    //     <!--[if lte mso 11]>
+    //     <style type="text/css">
+    //         .outlook-group-fix { width:100% !important; }
+    //     </style>
+    //     <![endif]-->
+    //     <!--[if !mso]><!-->
+    //     <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+    //     <style type="text/css">
+    //         @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+    //     </style>
+    //     <!--<![endif]-->
+    //     <style type="text/css">
+    //         @media only screen and (min-width:480px) {
+    //             .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+    //         }
+    //     </style>
+    // </head>
+    // <body style="background-color: #fafafa; overflow: hidden;">
+    //     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+    //         <tr>
+    //             <td>
+    //                 <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+    //                     <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+    //                         <tbody>
+    //                             <tr>
+    //                                 <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+    //                                     <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+    //                                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+    //                                             <tbody>
+    //                                                 <tr>
+    //                                                     <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+    //                                                         <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+    //                                                             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+    //                                                                 <tbody>
+    //                                                                     <tr>
+    //                                                                         <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+    //                                                                             <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+    //                                                                                 <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+    //                                                                                 <div style="text-align:start;">
+    //                                                                                     <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${req.body.userName}</h2>
+    //                                                                                     <p>Welcome to Skin Elegance Shop! We're thrilled to have you join our community of skin care enthusiasts. To start exploring the best in skin care products, please verify your email address by clicking the link below.</p>
+    //                                                                                 </div>
+    //                                                                             </div>
+    //                                                                         </td>
+    //                                                                     </tr>
 
+    //                                                                 </tbody>
+    //                                                             </table>
+    //                                                             <table>
+    //                                                             <tbody>
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>Name</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order.firstName} {order.lastName}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>City/Address</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order?.city} / {order.address}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+
+
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>Status</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order.status}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               {order.status === "cancelled" ? <tr className="shipping-totals">
+    //                                                                 <th>Reason Canceled</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order.reasonRejected}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr> : ''}
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>Status</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order.status}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>Phone Number</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order.phoneNumber}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>Payment Type</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order.paymentType}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>Created Date</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination"><strong>{order.createdAt.split('T')[0]}</strong>.</p>
+    //                                                                   <p className="destination"><strong>{order.createdAt.split('T')[1]}</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               <tr className="cart-subtotal">
+    //                                                                 <th>Subtotal</th>
+    //                                                                 <td>
+    //                                                                   <span className="amount">₪{order ? order?.finalPrice?.toFixed(2) : ''}</span>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               <tr className="shipping-totals">
+    //                                                                 <th>Shipping</th>
+    //                                                                 <td>
+    //                                                                   <p className="destination">Shipping to <strong>Cities of Palestine is ₪30</strong>.</p>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               <tr className="order-total">
+    //                                                                 <th>Total</th>
+    //                                                                 <td>
+    //                                                                   <span className="amount">₪{order ? (order?.finalPrice + 30).toFixed(2) : ''}</span>
+    //                                                                 </td>
+    //                                                               </tr>
+    //                                                               {order.contact ? <tr className="order-total">
+    //                                                                 <th>Contact</th>
+    //                                                                 <td>
+    //                                                                   <span className="destination ">{order.contact.adminEmail}</span> /
+    //                                                                   <span className="destination ">{order.contact.adminPhoneNumber}</span>
+    //                                                                 </td>
+    //                                                               </tr> : ''}
+
+    //                                                             </tbody>
+    //                                                           </table>
+    //                                                         </div><!--[if mso | IE]>
+    //                                                         </td>
+    //                                                     </tr>
+    //                                                 </table>
+    //                                             <![endif]-->
+    //                                             </td>
+    //                                         </tr>
+    //                                     </tbody>
+    //                                 </table>
+    //                             </div>
+    //                         </td>
+    //                     </tr>
+    //                 </tbody>
+    //             </table>
+    //         </div>
+    //     </td>
+    // </tr>
+    // </table>
+    // </body>
+    // </html>
+    // `);
     return res.status(201).json({ message: 'success', order });
 }
 

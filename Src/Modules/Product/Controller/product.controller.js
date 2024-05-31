@@ -144,7 +144,7 @@ export const createProduct = async (req, res, next) => {
                         .ReadMsgBody { width: 100%; }
                         .ExternalClass { width: 100%; }
                         .ExternalClass * { line-height: 100%; }
-                        body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; }
+                        body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
                         table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
                         img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
                         p { display: block; margin: 13px 0; }
@@ -182,11 +182,11 @@ export const createProduct = async (req, res, next) => {
                         }
                     </style>
                 </head>
-                <body style="background-color: #fafafa;">
-                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
+                <body style="background-color: #fafafa; overflow: hidden;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
                         <tr>
                             <td>
-                                <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
                                     <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
                                         <tbody>
                                             <tr>
@@ -203,19 +203,17 @@ export const createProduct = async (req, res, next) => {
                                                                                         <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
                                                                                             <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
                                                                                                 <div style="text-align:start;">
-                                                                                                    <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #46D7D4;letter-spacing: 0.27px;">Hi ${users[index].userName}</h2>
+                                                                                                    <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #46D7D4;letter-spacing: 0.27px; text-transform: capitalize;">Hi ${users[index].userName}</h2>
                                                                                                     <p>We've recently added a new Product in ${req.body.categoryName} to our store! Check out our latest product:</p>
                                                                                                     <table style="width:100%; border-collapse: collapse;">
                                                                                                         <tr>
-                                                                                                            <td style="padding: 10px;">
-                                                                                                                <img src=${product.mainImage.secure_url} alt=${product.slug} style="max-width: 300px;">
-                                                                                                            </td>
-                                                                                                            <td style="padding: 10px;">
-                                                                                                                <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif; font-weight: 500; font-size: 20px;color: #46D7D4;">${product.name}</h3>
+                                                                                                                <img src="${product.mainImage.secure_url}" alt="${product.slug}" style="max-width: 300px;">
+                                                                                                            </tr>
+                                                                                                            <tr style="padding: 10px;">
+                                                                                                                <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif; font-weight: 500; font-size: 20px;color: #46D7D4; text-transform: capitalize;">${product.name}</h3>
                                                                                                                 <p style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif; font-size: 14px; color:black;">${product.description}</p>
                                                                                                                 <p style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif; font-size: 14px; color:black;">Price: ₪ ${product.finalPrice}</p>
-                                                                                                            </td>
-                                                                                                        </tr>
+                                                                                                            </tr>
                                                                                                     </table>
                                                                                                 </div>
                                                                                             </div>
@@ -258,8 +256,8 @@ export const createProduct = async (req, res, next) => {
                 </tr>
                 </table>
                 </body>
-                </html>    
-                `;
+                </html>`;
+    
                 try {
                     await sendEmail(user.email, `New Product ✨🔥`, emailContent);
                 } catch (emailError) {
@@ -269,8 +267,8 @@ export const createProduct = async (req, res, next) => {
         } catch (error) {
             console.error('Error fetching users or sending emails:', error);
         }
-     
     }
+    
     return res.status(201).json({ message: 'success', product });
 }
 

@@ -9,6 +9,8 @@ export const createOrder= Joi.object(
         phoneNumber: Joi.string().min(10).max(10),
         note: Joi.string().min(10).max(100),
         address: Joi.string().min(10).max(100),
+        paymentType: Joi.string().required(),
+        cardId: Joi.string().min(24).max(24),
         city: Joi.string().valid('Hebron','Nablus','Jerusalem','Ramallah','Tulkarm','Jenin','Al-Bireh','Jericho','Yatta','Beit Jala').required()
      }
    )

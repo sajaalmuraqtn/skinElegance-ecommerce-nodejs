@@ -12,7 +12,7 @@ import AdvertisementModel from "../../../../DB/model/advertisement.model.js";
 
 
 export const profile = async (req, res, next) => {
-    const user = await UserModel.findById(req.user._id)
+    const user = await UserModel.findById(req.user._id).populate('PaymentMethods');
     return res.status(201).json({ message: "success", user });
 }
 
@@ -182,7 +182,7 @@ export const updateProfile = async (req, res, next) => {
 
     export const getSpecificUser = async (req, res, next) => {
         const { userId } = req.params;
-        const user = await UserModel.findById(userId);
+        const user = await UserModel.findById(userId).populate('PaymentMethods');
         if (!user) {
             return next(new Error(` user not found `, { cause: 404 }));
         }

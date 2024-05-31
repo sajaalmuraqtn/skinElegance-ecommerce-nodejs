@@ -64,5 +64,12 @@ const UserSchema = new Schema({
     timestamps: true
 })
 
+UserSchema.virtual("PaymentMethods",
+    {
+        localField: '_id',
+        foreignField: 'createdByUser.userId',
+        ref: 'PaymentMethod'
+    });
+
 const UserModel = mongoose.models.User || model('User', UserSchema);
 export default UserModel;
