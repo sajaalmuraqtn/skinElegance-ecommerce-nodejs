@@ -53,8 +53,7 @@ const OrderSchema = new Schema({
             trim: true
         },
         cardType: {
-            type: String,
-            default:'visa' 
+            type: String 
         },
         expiryDate: {
             type: String,
