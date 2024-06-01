@@ -19,7 +19,7 @@ export const createOrder = async (req, res, next) => {
     req.body.products = cart.products;
     const currentDate = new Date();
 
-    if (req.body.couponName ) {
+    if (req.body.couponName) {
         const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         if (!coupon) {
             return next(new Error("coupon not found", { cause: 404 }));
@@ -81,7 +81,7 @@ export const createOrder = async (req, res, next) => {
             cardholderName: card.cardholderName,
             cardId: card._id
         }
-          order = await OrderModel.create({
+        order = await OrderModel.create({
             userId: req.user._id,
             products: finalProductList,
             finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
@@ -93,12 +93,12 @@ export const createOrder = async (req, res, next) => {
             lastName: req.body.lastName,
             note: req.body.note ?? '',
             paymentType: 'visa',
-            cardDetails
+            cardDetails: cardDetails
         });
 
     }
     else {
-          order = await OrderModel.create({
+        order = await OrderModel.create({
             userId: req.user._id,
             products: finalProductList,
             finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
@@ -111,15 +111,17 @@ export const createOrder = async (req, res, next) => {
             note: req.body.note ?? '',
         });
     }
-
-    for (const product of req.body.products) {
-        await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity, number_sellers: 1 } })
+    if (order) {
+        for (const product of req.body.products) {
+            await ProductModel.updateOne({ _id: product.productId }, { $inc: { stock: -product.quantity, number_sellers: 1 } })
+        }
+        await CartModel.updateOne({ userId: req.user._id }, {
+            products: [],
+            totalPrice: 0
+        })
+        await CouponModel.updateOne({ _id: coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
-    await CartModel.updateOne({ userId: req.user._id }, {
-        products: [],
-        totalPrice: 0
-    })
-    await CouponModel.updateOne({ _id: coupon._id }, { $addToSet: { usedBy: req.user._id } })
+
 
     // await sendEmail(email, "Confirm Email", `
     // <!DOCTYPE html>

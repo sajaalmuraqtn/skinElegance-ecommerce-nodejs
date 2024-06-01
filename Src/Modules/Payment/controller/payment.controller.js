@@ -45,7 +45,7 @@ export const getPaymentMethod = async (req, res, next) => {
 export const getSpecificPaymentMethod = async (req, res, next) => {
     const paymentMethod = await PaymentMethodModel.findById(req.params.paymentMethodId);
     
-    if (!Payment) {
+    if (!paymentMethod) {
         return next(new Error("Payment card Not Found", { cause: 404 }));
     } 
      
