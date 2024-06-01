@@ -4,7 +4,7 @@ export const createOrder= Joi.object(
     {
         firstName:Joi.string().min(3).max(30).required(),
         lastName:Joi.string().min(3).max(30).required(),
-        couponName: Joi.string().min(3).max(30), 
+        couponName: Joi.string().min(3).max(30).optional().allow(''), 
         phoneNumber: Joi.string().min(10).max(10),
         note: Joi.string().min(10).max(100).optional().allow(''),
         address: Joi.string().min(10).max(100),

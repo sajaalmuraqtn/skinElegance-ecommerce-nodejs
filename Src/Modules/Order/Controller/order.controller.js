@@ -19,7 +19,7 @@ export const createOrder = async (req, res, next) => {
     req.body.products = cart.products;
     const currentDate = new Date();
 
-    if (req.body.couponName !== 'couponName') {
+    if (req.body.couponName ) {
         const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         if (!coupon) {
             return next(new Error("coupon not found", { cause: 404 }));
@@ -32,7 +32,6 @@ export const createOrder = async (req, res, next) => {
         if (coupon.usedBy.includes(req.user._id)) {
             return next(new Error(" coupon already used", { cause: 400 }));
         }
-        await CouponModel.updateOne({ _id: coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
 
     let subTotals = 0;
@@ -72,7 +71,7 @@ export const createOrder = async (req, res, next) => {
         req.body.note = user.phoneNumber;
     }
     let order;
-    if (req.body.paymentType !== 'cash') {
+    if (req.body.paymentType == 'visa') {
         const card = await PaymentMethodModel.findById(req.body.cardId);
         const cardDetails = {
             cardNumber: card.cardNumber,
@@ -88,7 +87,7 @@ export const createOrder = async (req, res, next) => {
             finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
             address: req.body.address,
             phoneNumber: req.body.phoneNumber,
-            couponName: req.body.couponName !== 'couponName' ? req.body.couponName : '',
+            couponName: req.body.couponName !== '' ? req.body.couponName : '',
             city: req.body.city,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -105,7 +104,7 @@ export const createOrder = async (req, res, next) => {
             finalPrice: subTotals - (subTotals * (req.body.couponName?.amount || 0) / 100),
             address: req.body.address,
             phoneNumber: req.body.phoneNumber,
-            couponName: req.body.couponName !== 'couponName' ? req.body.couponName : '',
+            couponName: req.body.couponName !== '' ? req.body.couponName : '',
             city: req.body.city,
             firstName: req.body.firstName,
             lastName: req.body.lastName,
@@ -120,6 +119,8 @@ export const createOrder = async (req, res, next) => {
         products: [],
         totalPrice: 0
     })
+    await CouponModel.updateOne({ _id: coupon._id }, { $addToSet: { usedBy: req.user._id } })
+
     // await sendEmail(email, "Confirm Email", `
     // <!DOCTYPE html>
     // <html>
