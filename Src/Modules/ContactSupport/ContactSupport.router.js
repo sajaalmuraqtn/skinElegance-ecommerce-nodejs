@@ -8,7 +8,7 @@ const router = Router();
 
 router.post('/create', auth(roles.User), validation(validators.addContact), asyncHandler(ContactSupportController.addContact))
 router.get('/getAllContacts', auth(roles.Admin), asyncHandler(ContactSupportController.getAllContacts));
-router.get('/getSpecificContactSupport/:contactSupportId', auth(roles.Admin),validation(validators.addContact), asyncHandler(ContactSupportController.getSpecificContactSupport));
+router.get('/getSpecificContactSupport/:contactSupportId', auth(roles.Admin),validation(validators.getSpecificContactSupport), asyncHandler(ContactSupportController.getSpecificContactSupport));
 router.put('/Replay/:contactSupportId', auth(roles.Admin),validation(validators.addReplay), asyncHandler(ContactSupportController.addReplay));
 
 export default router;
