@@ -7,7 +7,7 @@ import * as validators from "./ContactSupport.validation.js";
 const router = Router();
 
 router.post('/create', auth(roles.User), validation(validators.addContact), asyncHandler(ContactSupportController.addContact))
-router.get('/getAllContacts', auth(roles.User), asyncHandler(ContactSupportController.getAllContacts));
+router.get('/getAllContacts', auth(roles.Admin), asyncHandler(ContactSupportController.getAllContacts));
 router.get('/getSpecificContactSupport/:contactSupportId', auth(roles.Admin),validation(validators.addContact), asyncHandler(ContactSupportController.getSpecificContactSupport));
 router.put('/Replay/:contactSupportId', auth(roles.Admin),validation(validators.addReplay), asyncHandler(ContactSupportController.addReplay));
 
