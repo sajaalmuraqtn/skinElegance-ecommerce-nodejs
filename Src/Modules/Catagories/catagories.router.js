@@ -1,7 +1,6 @@
 import { Router } from "express";
 import * as CatagoriesController from './Controller/catagories.controller.js'
-import SubCatagoriesRouter from '../SubCatagories/subcatagories.router.js'
-import fileUpload, { fileValidation } from "../../Services/multer.js";
+ import fileUpload, { fileValidation } from "../../Services/multer.js";
 import { auth, roles } from "../../Middleware/auth.js";
 import { endPoint } from "./category.endpoint.js";
 import { asyncHandler } from "../../Services/errorHandling.js";
@@ -10,8 +9,7 @@ import { validation } from "../../Middleware/validation.js";
 
 const router=Router();
 
-// router.use('/:categoryId/subCatagories',validation(validators.getSpecificCategory),SubCatagoriesRouter);
-router.get('/',auth(endPoint.getall),asyncHandler(CatagoriesController.getCatagories));
+ router.get('/',auth(endPoint.getall),asyncHandler(CatagoriesController.getCatagories));
 router.get('/active',asyncHandler(CatagoriesController.getActiveCategory));
 router.get('/LatestNewActiveCategory',asyncHandler(CatagoriesController.getLatestNewActiveCategory));
 router.get('/:categoryId',validation(validators.getSpecificCategory),asyncHandler(CatagoriesController.getSpecificCategory));

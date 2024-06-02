@@ -12,7 +12,7 @@ export const createProduct = Joi.object(
         file: generalFieldValidation.file.required(),
         status: Joi.string().valid('Active', 'Inactive'),
         categoryId: Joi.string().required().min(24).max(24),
-         expiredDate: Joi.date().greater('now').required()
+        expiredDate: Joi.date().greater('now').required()
     }
 )
 

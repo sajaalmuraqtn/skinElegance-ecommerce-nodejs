@@ -1,6 +1,5 @@
 import slugify from "slugify";
 import CategoryModel from "../../../../DB/model/category.model.js";
-import SubCategoryModel from "../../../../DB/model/subCategory.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
 import ProductModel from "../../../../DB/model/product.model.js";
 import { asyncHandler } from "../../../Services/errorHandling.js";
@@ -8,6 +7,7 @@ import { pagination } from "../../../Services/pagination.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import { confirmEmail } from "../../Auth/Controller/auth.controller.js";
 import { sendEmail } from "../../../Services/email.js";
+import ReviewModel from "../../../../DB/model/review.model.js";
 
 export const getAllProduct = async (req, res, next) => {
 
@@ -129,7 +129,7 @@ export const createProduct = async (req, res, next) => {
     if (product.status === "Active") {
         try {
             const users = await UserModel.find({ confirmEmail: true, role: 'User' });
-    
+
             for (let index = 0; index < users.length; index++) {
                 const user = users[index];
                 const emailContent = `<!DOCTYPE html>
@@ -257,7 +257,7 @@ export const createProduct = async (req, res, next) => {
                 </table>
                 </body>
                 </html>`;
-    
+
                 try {
                     await sendEmail(user.email, `New Product ✨🔥`, emailContent);
                 } catch (emailError) {
@@ -268,7 +268,7 @@ export const createProduct = async (req, res, next) => {
             console.error('Error fetching users or sending emails:', error);
         }
     }
-    
+
     return res.status(201).json({ message: 'success', product });
 }
 
@@ -283,7 +283,7 @@ export const updateProduct = async (req, res, next) => {
         if (!checkCategory) {
             return next(new Error("category not found", { cause: 404 }));
         }
-       
+
 
         product.categoryId = req.body.categoryId;
         product.categoryName = checkCategory.name;
@@ -352,7 +352,6 @@ export const restoreProduct = async (req, res, next) => {
         return next(new Error("product not found", { cause: 404 }));
     }
     const checkCategory = await CategoryModel.findById(checkProduct.categoryId);
-    // const checkSubCategory = await SubCategoryModel.findById(checkProduct.subCategoryId); || checkSubCategory.isDeleted || checkSubCategory.status == "Inactive"
     if (checkCategory.isDeleted || checkCategory.status == "Inactive") {
         return next(new Error("can not restore this product category not available", { cause: 400 }));
     }
@@ -392,6 +391,9 @@ export const hardDeleteProduct = async (req, res, next) => {
     if (!product) {
         return next(new Error("product not Archived", { cause: 404 }));
     }
+    await ReviewModel.deleteMany({ productId: req.params.productId })
+    await cloudinary.uploader.destroy(product.mainImage.public_id);
+
     return res.status(201).json({ message: 'success', product });
 }
 

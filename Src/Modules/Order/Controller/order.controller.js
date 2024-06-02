@@ -74,11 +74,11 @@ export const createOrder = async (req, res, next) => {
     if (req.body.paymentType == 'visa') {
         const card = await PaymentMethodModel.findById(req.body.cardId);
         const cardDetails = {
-            cardNumber: card.cardNumber,
-            cardType: card.cardType,
-            expiryDate: card.expiryDate,
-            cvc: card.cvc,
-            cardholderName: card.cardholderName,
+            cardNumber: card.cardDetails.cardNumber,
+            cardType: card.cardDetails.cardType,
+            expiryDate: card.cardDetails.expiryDate,
+            cvc: card.cardDetails.cvc,
+            cardholderName: card.cardDetails.cardholderName,
             cardId: card._id
         }
         order = await OrderModel.create({
@@ -329,7 +329,9 @@ export const getAllOrders = async (req, res, next) => {
             $or: [
                 { status: { $regex: req.query.search, $options: 'i' } },
                 { city: { $regex: req.query.search, $options: 'i' } },
-                { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } }
+                { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } },
+                { paymentType: { $regex: req.query.search, $options: 'i' } },
+            
             ]
         });
     }
@@ -357,7 +359,8 @@ export const getMyOrders = async (req, res, next) => {
     if (req.query.search) {
         mongooseQuery.find({
             $or: [
-                { status: { $regex: req.query.search, $options: 'i' } }
+                { status: { $regex: req.query.search, $options: 'i' } },
+                { paymentType: { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }

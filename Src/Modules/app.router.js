@@ -3,7 +3,6 @@ import { globalErrorHandler } from '../Services/errorHandling.js'
 import AuthRouter from './Auth/auth.router.js'
 import UserRouter from './User/user.router.js'
 import CatagoriesRouter from './Catagories/catagories.router.js'
-import SubCatagoriesRouter from './SubCatagories/subcatagories.router.js'
 import ProductRouter from './Product/product.router.js'
 import CouponRouter from './Coupon/coupon.router.js'
 import CartRouter from './Cart/cart.router.js' 
@@ -13,6 +12,7 @@ import AdvertisementRouter from './Advertisement/advertisement.router.js'
 import ServiceRouter from './service/service.router.js'
 import ContactRouter from './Contacts/contact.router.js'
 import PaymentRouter from  './Payment/payment.router.js'
+import ContactSupportRouter from  './ContactSupport/ContactSupport.router.js'
 import cors from 'cors'
 import ConnectDB from '../../DB/connection.js';
 
@@ -27,8 +27,7 @@ ConnectDB();
 app.use('/auth',AuthRouter);
 app.use('/user',UserRouter);
 app.use('/catagories', CatagoriesRouter);
-app.use('/subCatagories', SubCatagoriesRouter);
-app.use('/products', ProductRouter);
+ app.use('/products', ProductRouter);
 app.use('/coupon', CouponRouter);
 app.use('/cart', CartRouter);
 app.use('/order', OrderRouter);
@@ -37,7 +36,7 @@ app.use('/advertisement', AdvertisementRouter);
 app.use('/services', ServiceRouter);
 app.use('/contact', ContactRouter);
 app.use('/PaymentMethod' ,PaymentRouter);
-
+app.use('/ContactSupport' ,ContactSupportRouter);
 
 app.get('*',(req,res)=>{ 
     return res.json({message:'page not found'})

@@ -4,7 +4,6 @@ import { asyncHandler } from "../../Services/errorHandling.js";
 import { auth, roles } from "../../Middleware/auth.js";
 import { generalFieldValidation, validation } from "../../Middleware/validation.js"
 import * as validators from "./contact.validation.js";
-import ContactModel from "../../../DB/model/contact.model.js";
 const router = Router();
 
 router.post('/create', auth(roles.Admin), validation(validators.addContact), asyncHandler(ContactController.addContact))

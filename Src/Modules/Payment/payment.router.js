@@ -8,6 +8,7 @@ const router=Router();
 
 router.post('/AddPayment' ,auth(roles.User),validation(validators.addPayment) ,asyncHandler(PaymentMethodController.createPaymentMethod));
 router.get('/getSpecificPaymentMethod/:paymentMethodId' ,auth(Object.values(roles)),validation(validators.getSpecificPaymentMethod) ,asyncHandler(PaymentMethodController.getSpecificPaymentMethod));
+router.delete('/deletePaymentMethod/:paymentMethodId' ,auth(roles.User),validation(validators.getSpecificPaymentMethod) ,asyncHandler(PaymentMethodController.deletePaymentMethod));
 router.get('/getPaymentMethods' ,auth(roles.User) ,asyncHandler(PaymentMethodController.getPaymentMethod));
 
 export default router;

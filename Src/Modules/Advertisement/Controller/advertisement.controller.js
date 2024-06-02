@@ -24,7 +24,9 @@ export const getAllAdvertisement = async (req, res, next) => {
         mongooseQuery.find({
             $or: [
                 { name: { $regex: req.query.search, $options: 'i' } },
-                { description: { $regex: req.query.search, $options: 'i' } }
+                { description: { $regex: req.query.search, $options: 'i' } },
+                { 'createdByUser.userName': { $regex: req.query.search, $options: 'i' } },
+                { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } }
             ]
         })
     }
@@ -58,9 +60,7 @@ export const getActiveAdvertisement = async (req, res, next) => {
             $or: [
                 { name: { $regex: req.query.search, $options: 'i' } },
                 { description: { $regex: req.query.search, $options: 'i' } },
-                { city: { $regex: req.query.search, $options: 'i' } },
-                { 'createdByUser.userName': { $regex: req.query.search, $options: 'i' } },
-                { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } }
+                { city: { $regex: req.query.search, $options: 'i' } }
             ]
         });
     }
@@ -374,6 +374,13 @@ export const hardDeleteAdvertisement = async (req, res, next) => {
     if (!advertisement) {
         return next(new Error("advertisement not found", { cause: 404 }));
     }
+    await cloudinary.uploader.destroy(advertisement.mainImage.public_id); 
+
+    const services = await ServiceModel.find({advertisementId:req.params.advertisementId});
+    for (let index = 0; index < services.length; index++) {
+        await cloudinary.uploader.destroy(services[index].mainImage.public_id); 
+    }
+    
     await ServiceModel.deleteMany({ advertisementId: req.params.advertisementId });
     return res.status(201).json({ message: 'success', advertisement });
 }

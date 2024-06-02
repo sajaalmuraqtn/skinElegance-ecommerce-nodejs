@@ -326,6 +326,8 @@ export const hardDeleteService = async (req, res, next) => {
     if (!service) {
         return next(new Error("service not deleted", { cause: 404 }));
     }
+    await cloudinary.uploader.destroy(service.mainImage.public_id); 
+
     return res.status(201).json({ message: 'success', service });
 }
 
