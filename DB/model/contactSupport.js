@@ -21,7 +21,7 @@ const ContactSupportSchema = new Schema({
         type: Boolean, default: false
     },
     replay:{
-        type: String, required: true
+        type: String 
     },
     repliedBy: {
         image: Object,

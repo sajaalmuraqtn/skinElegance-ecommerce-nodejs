@@ -5,7 +5,7 @@ import ProductModel from "../../../../DB/model/product.model.js";
 import UserModel from "../../../../DB/model/user.model.js";
 import moment from 'moment';
 import { pagination } from "../../../Services/pagination.js";
-import ContactModel from "../../../../DB/model/contact.model.js";
+import OrderContactModel from "../../../../DB/model/orderContact.model.js";
 import PaymentMethodModel from "../../../../DB/model/paymentmethod.model.js";
 
 export const createOrder = async (req, res, next) => {
@@ -428,7 +428,7 @@ export const addContactsOrder = async (req, res, next) => {
             image: user.image,
             _id: user._id
         };
-        const addedContact = await ContactModel.findOne({ _id: req.body.contactId, confirmEmail: "true" });
+        const addedContact = await OrderContactModel.findOne({ _id: req.body.contactId, confirmEmail: "true" });
         if (!addedContact) {
             return next(new Error(`Contact not found`, { cause: 404 }));
         }

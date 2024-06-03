@@ -1,9 +1,9 @@
 import { Router } from "express";
-import * as ContactController from './controllers/contact.controllers.js'
+import * as ContactController from './controllers/orderContact.controllers.js'
 import { asyncHandler } from "../../Services/errorHandling.js";
 import { auth, roles } from "../../Middleware/auth.js";
 import { generalFieldValidation, validation } from "../../Middleware/validation.js"
-import * as validators from "./contact.validation.js";
+import * as validators from "./orderContact.validation.js";
 const router = Router();
 
 router.post('/create', auth(roles.Admin), validation(validators.addContact), asyncHandler(ContactController.addContact))

@@ -10,7 +10,7 @@ import OrderRouter from './Order/order.router.js'
 import FavoriteRouter from './Favorite/favorite.router.js'
 import AdvertisementRouter from './Advertisement/advertisement.router.js'
 import ServiceRouter from './service/service.router.js'
-import ContactRouter from './Contacts/contact.router.js'
+import OrderContactRouter from './Contacts/orderContact.router.js'
 import PaymentRouter from  './Payment/payment.router.js'
 import ContactSupportRouter from  './ContactSupport/ContactSupport.router.js'
 import cors from 'cors'
@@ -34,7 +34,7 @@ app.use('/order', OrderRouter);
 app.use('/Favorite', FavoriteRouter);
 app.use('/advertisement', AdvertisementRouter);
 app.use('/services', ServiceRouter);
-app.use('/contact', ContactRouter);
+app.use('/contact', OrderContactRouter);
 app.use('/PaymentMethod' ,PaymentRouter);
 app.use('/ContactSupport' ,ContactSupportRouter);
 

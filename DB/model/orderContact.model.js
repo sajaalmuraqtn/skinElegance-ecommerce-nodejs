@@ -1,6 +1,6 @@
 import mongoose, { Schema, Types, model } from "mongoose";
 
-const ContactSchema = new Schema({
+const OrderContactSchema = new Schema({
     
     email: {
         type: String,
@@ -27,5 +27,5 @@ const ContactSchema = new Schema({
     timestamps: true
 })
 
-const ContactModel = mongoose.models.Contact || model('Contact', ContactSchema);
-export default ContactModel;
+const OrderContactModel = mongoose.models.OrderContact || model('OrderContact', OrderContactSchema);
+export default OrderContactModel;

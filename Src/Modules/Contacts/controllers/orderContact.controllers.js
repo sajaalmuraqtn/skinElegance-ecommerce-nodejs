@@ -1,15 +1,15 @@
 import jwt from 'jsonwebtoken'
  import UserModel from "../../../../DB/model/user.model.js";
- import ContactModel from "../../../../DB/model/contact.model.js";
+ import OrderContactModel from "../../../../DB/model/orderContact.model.js";
 import { sendEmail } from "../../../Services/email.js";
 
 export const addContact = async (req, res,next) => {
      const {email, phoneNumber } = req.body;
-    if (await ContactModel.findOne({ email: email})) {
+    if (await OrderContactModel.findOne({ email: email})) {
         return next(new Error("email Already exist",{cause:409}));
      }
   
-    if (await ContactModel.findOne({ phoneNumber:phoneNumber })) {
+    if (await OrderContactModel.findOne({ phoneNumber:phoneNumber })) {
         return next(new Error("Phone Number Already exist",{cause:409}));
      }
      const token = jwt.sign({ email }, process.env.CONFIRMEMAILSECRET);
@@ -137,7 +137,7 @@ export const addContact = async (req, res,next) => {
         _id:user._id
     } 
     req.body.createdByUser=createdByUser;
-    const createContact = await ContactModel.create(req.body);
+    const createContact = await OrderContactModel.create(req.body);
     if (!createContact) {
         return next(new Error(`error while create Contact `, { cause: 400 }));
     }
@@ -150,7 +150,7 @@ export const confirmEmail = async (req, res,next) => {
     if (!decoded) {
         return next(new Error("invalid token",{cause:404}));
     }
-    const user = await ContactModel.findOneAndUpdate({ email: decoded.email, confirmEmail:false },{ confirmEmail: true });
+    const user = await OrderContactModel.findOneAndUpdate({ email: decoded.email, confirmEmail:false },{ confirmEmail: true });
     if (!user) {
         return next(new Error("Invalid Verify Email Or Your Email is Verified",{cause:400 }));
     
@@ -161,13 +161,13 @@ export const confirmEmail = async (req, res,next) => {
 
 export const getAllContacts = async (req, res, next) => {
    
-    const contacts = await  ContactModel.find();
+    const contacts = await  OrderContactModel.find();
     return res.status(201).json({ message: 'success', contacts });
 }
  
 export const getConfirmedContacts = async (req, res, next) => { 
  
-    const contacts = await ContactModel.find({ confirmEmail: 'true'  });
+    const contacts = await OrderContactModel.find({ confirmEmail: 'true'  });
     if (!contacts) {
         return next(new Error(`error while fetching data`, { cause: 400 }));
     }
@@ -176,16 +176,16 @@ export const getConfirmedContacts = async (req, res, next) => {
  
  
 export const deleteUnConfirmedContacts=async(req,res,next)=>{
-    const invalidConfirmsContacts=await ContactModel.deleteMany({confirmEmail:false});
+    const invalidConfirmsContacts=await OrderContactModel.deleteMany({confirmEmail:false});
     return res.status(201).json({ message: 'success', invalidConfirmsContacts })
     
 }
 
 export const deleteContact=async(req,res,next)=>{
-    if (!await ContactModel.findById(req.params.contactId)) {
+    if (!await OrderContactModel.findById(req.params.contactId)) {
         return next(new Error("Contact not found",{cause:404})); 
     }
-    const contact=await ContactModel.findByIdAndDelete(req.params.contactId);
+    const contact=await OrderContactModel.findByIdAndDelete(req.params.contactId);
     return res.status(201).json({ message: 'success', contact })
     
 }

@@ -5,10 +5,11 @@ import { pagination } from "../../../Services/pagination.js";
 import ProductModel from "../../../../DB/model/product.model.js";
 import CouponModel from "../../../../DB/model/coupon.model.js";
 import CategoryModel from "../../../../DB/model/category.model.js";
-import ContactModel from "../../../../DB/model/contact.model.js";
+import OrderContactModel from "../../../../DB/model/orderContact.model.js";
 import OrderModel from "../../../../DB/model/order.model.js";
 import ServiceModel from "../../../../DB/model/service.model.js";
 import AdvertisementModel from "../../../../DB/model/advertisement.model.js";
+import ContactSupportModel from "../../../../DB/model/contactSupport.js";
 
 
 export const profile = async (req, res, next) => {
@@ -51,7 +52,7 @@ export const updateProfile = async (req, res, next) => {
                 { "updatedByUser._id": req.user._id }, // Filter products by old username
                 { $set: { "updatedByUser.userName": req.body.userName.toLowerCase() } } // Update username to new username
             );
-            await ContactModel.updateMany(
+            await OrderContactModel.updateMany(
                 { "createdByUser._id": req.user._id }, // Filter products by old username
                 { $set: { "createdByUser.userName": req.body.userName.toLowerCase() } } // Update username to new username
             );
@@ -74,6 +75,10 @@ export const updateProfile = async (req, res, next) => {
             await AdvertisementModel.updateMany(
                 { "updatedByUser._id": req.user._id }, // Filter products by old username
                 { $set: { "updatedByUser.userName": req.body.userName.toLowerCase() } } // Update username to new username
+            );
+            await ContactSupportModel.updateMany(
+                { "repliedBy._id": req.user._id }, // Filter products by old username
+                { $set: { "repliedBy.userName": req.body.userName.toLowerCase() } } // Update username to new username
             );
         }
 
@@ -118,7 +123,7 @@ export const updateProfile = async (req, res, next) => {
                     { "updatedByUser._id": req.user._id }, // Filter products by old username
                     { $set: { "updatedByUser.image": { secure_url, public_id } } } // Update username to new username
                 );
-                await ContactModel.updateMany(
+                await OrderContactModel.updateMany(
                     { "createdByUser._id": req.user._id }, // Filter products by old username
                     { $set: { "createdByUser.image": { secure_url, public_id } } } // Update username to new username
                 );
@@ -141,6 +146,10 @@ export const updateProfile = async (req, res, next) => {
                 await AdvertisementModel.updateMany(
                     { "updatedByUser._id": req.user._id }, // Filter products by old username
                     { $set: { "updatedByUser.image": { secure_url, public_id } } } // Update username to new username
+                );
+                await ContactSupportModel.updateMany(
+                    { "repliedBy._id": req.user._id }, // Filter products by old username
+                    { $set: { "repliedBy.image": { secure_url, public_id } } } // Update username to new username
                 );
             }
         }
