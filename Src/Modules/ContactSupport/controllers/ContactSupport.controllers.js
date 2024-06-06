@@ -148,8 +148,13 @@ export const getAllContacts = async (req, res, next) => {
     if (req.query.fields) {
         mongooseQuery.select(req.query.fields?.replaceAll(',', ' '))
     }
-    const contacts = await mongooseQuery
-    return res.status(201).json({ message: 'success', contacts });
+    const contacts = await mongooseQuery;
+    const readdContacts=await ContactSupportModel.find({replied:true}).count();
+    const unReaddContacts=await ContactSupportModel.find({replied:false}).count();
+    const RequestContacts=await ContactSupportModel.find({title:'Request an Advertisement'}).count();
+    const SupportContacts=await ContactSupportModel.find({title:'Support Team'}).count();
+
+    return res.status(201).json({ message: 'success', contacts,readdContacts,unReaddContacts,SupportContacts,RequestContacts });
 }
 
 export const getSpecificContactSupport = async (req, res, next) => {

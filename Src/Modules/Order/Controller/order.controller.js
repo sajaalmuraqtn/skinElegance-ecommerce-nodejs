@@ -119,6 +119,7 @@ export const createOrder = async (req, res, next) => {
             products: [],
             totalPrice: 0
         })
+        const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         await CouponModel.updateOne({ _id: coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
 
@@ -340,7 +341,13 @@ export const getAllOrders = async (req, res, next) => {
     }
 
     const orders = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' '));
-    return res.status(201).json({ message: "success", orders });
+    const deliveredOrder=await OrderModel.find({status:'delivered'}).count();
+    const onWayOrder=await OrderModel.find({status:'onWay'}).count();
+    const confirmedOrder=await OrderModel.find({status:'confirmed'}).count();
+    const cancelledOrder=await OrderModel.find({status:'cancelled'}).count();
+    const pendingOrder=await OrderModel.find({status:'pending'}).count();
+
+    return res.status(201).json({ message: "success", orders,deliveredOrder:deliveredOrder,onWayOrder:onWayOrder,cancelledOrder:cancelledOrder,pendingOrder:pendingOrder,confirmedOrder:confirmedOrder });
 }
 
 export const getMyOrders = async (req, res, next) => {
