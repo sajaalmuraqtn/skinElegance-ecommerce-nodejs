@@ -403,9 +403,9 @@ export const updateStatusOrder = async (req, res, next) => {
 
     if (order.status !== 'confirmed' && req.body.status == 'onWay') {
         return next(new Error(` can not change status its should be confirmed `, { cause: 400 }));
-        if(!order.contact){
-            return next(new Error(` can not change status you should add contact details to this Customer `, { cause: 400 }));
-        }
+    }
+    if(!order.contact&&req.body.status == 'onWay'){
+        return next(new Error(` can not change status you should add contact details to this Customer `, { cause: 400 }));
     }
 
     if (order.status !== 'onWay' && req.body.status == 'delivered') {
