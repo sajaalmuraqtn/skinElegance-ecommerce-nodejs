@@ -398,15 +398,18 @@ export const updateStatusOrder = async (req, res, next) => {
     }
 
     if (order.status == 'cancelled' || order.status == 'delivered') {
-        return next(new Error(` can not change status this order `, { cause: 404 }));
+        return next(new Error(` can not change status this order `, { cause: 400}));
     }
 
     if (order.status !== 'confirmed' && req.body.status == 'onWay') {
-        return next(new Error(` can not change status its should be confirmed `, { cause: 404 }));
+        return next(new Error(` can not change status its should be confirmed `, { cause: 400 }));
+        if(!order.contact){
+            return next(new Error(` can not change status you should add contact details to this Customer `, { cause: 400 }));
+        }
     }
 
     if (order.status !== 'onWay' && req.body.status == 'delivered') {
-        return next(new Error(` can not change status its should be onWay `, { cause: 404 }));
+        return next(new Error(` can not change status its should be onWay `, { cause: 400 }));
     }
     const user = await UserModel.findById(req.user._id);
 
