@@ -593,7 +593,7 @@ export const adminSignIn = async (req, res,next) => {
         return next(new Error("data invalid",{cause:400}));  
     }
     const token = await jwt.sign({ id: user._id, role: user.role, status: user.status,image:user.image,userName:user.userName }, process.env.LOGINSECRET,
-        // {expiresIn:'5m'}
+        {expiresIn:'40m'}
     );
     const refreshToken = await jwt.sign({ id: user._id, role: user.role, status: user.status,image:user.image,userName:user.userName  }, process.env.LOGINSECRET, { expiresIn:60*60*24*30 });
     await sendEmail(email, "Logged In Successfully", `<!DOCTYPE html>
@@ -716,7 +716,7 @@ export const signIn = async (req, res,next) => {
         return next(new Error("data invalid",{cause:400}));  
     }
     const token = await jwt.sign({ id: user._id, role: user.role, status: user.status,image:user.image,userName:user.userName  }, process.env.LOGINSECRET,
-        // {expiresIn:'5m'}
+         {expiresIn:'1m'}
     );
     const refreshToken = await jwt.sign({ id: user._id, role: user.role, status: user.status,image:user.image,userName:user.userName  }, process.env.LOGINSECRET, { expiresIn:60*60*24*30 });
     await sendEmail(email, "Logged In Successfully", `<!DOCTYPE html>

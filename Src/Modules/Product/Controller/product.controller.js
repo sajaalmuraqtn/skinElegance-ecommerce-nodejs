@@ -2,11 +2,9 @@ import slugify from "slugify";
 import CategoryModel from "../../../../DB/model/category.model.js";
 import cloudinary from "../../../Services/cloudinary.js";
 import ProductModel from "../../../../DB/model/product.model.js";
-import { asyncHandler } from "../../../Services/errorHandling.js";
-import { pagination } from "../../../Services/pagination.js";
+ import { pagination } from "../../../Services/pagination.js";
 import UserModel from "../../../../DB/model/user.model.js";
-import { confirmEmail } from "../../Auth/Controller/auth.controller.js";
-import { sendEmail } from "../../../Services/email.js";
+ import { sendEmail } from "../../../Services/email.js";
 import ReviewModel from "../../../../DB/model/review.model.js";
 
 export const getAllProduct = async (req, res, next) => {
@@ -87,15 +85,7 @@ export const createProduct = async (req, res, next) => {
     }
     req.body.categoryName = checkCategory.name;
 
-    // const checkSubCategory = await SubCategoryModel.findOne({ _id: subCategoryId, categoryId });
-    // if (!checkSubCategory) {
-    //     return next(new Error("sub category not found", { cause: 404 }));
-    // }
-    // if (checkSubCategory.status == "Inactive" || checkSubCategory.isDeleted) {
-    //     return next(new Error("subcategory is not available", { cause: 400 }));
-    // }
-    // req.body.subCategoryName = checkSubCategory.name;
-
+     
     const name = req.body.name.toLowerCase();
     if (await ProductModel.findOne({ name }).select('name')) {
         return next(new Error("product name already exist", { cause: 409 }));
@@ -282,13 +272,55 @@ export const updateProduct = async (req, res, next) => {
         const checkCategory = await CategoryModel.findById(req.body.categoryId);
         if (!checkCategory) {
             return next(new Error("category not found", { cause: 404 }));
-        }
-
+        } 
 
         product.categoryId = req.body.categoryId;
         product.categoryName = checkCategory.name;
     }
+    if (req.body.name) {
+        const name = req.body.name.toLowerCase();
+        if (await ProductModel.findOne({ name }).select('name')) {
+            return next(new Error("product name already exist", { cause: 409 }));
+        }
+        product.name = name;
+        product.slug = slugify(name);
+    }
+    if (req.body.description) {
+        product.description = req.body.description;
+    }
 
+    if (req.body.price) {
+        product.price = req.body.price;
+        product.finalPrice = (req.body.price - (req.body.price * (discount || 0) / 100)).toFixed(2);
+        product.finalPrice = (req.body.price - (req.body.price * (product.discount || 0) / 100)).toFixed(2);
+    }
+
+    if (req.body.discount) {
+        product.discount = req.body.discount;
+        product.finalPrice = (product.price - (product.price * (req.body.discount || 0) / 100)).toFixed(2);
+    }
+    if (req.body.size) {
+        product.size = req.body.size;
+    }
+    if (req.body.expiredDate) {
+        product.expiredDate = req.body.expiredDate;
+    }
+    if (req.body.status) {
+        const checkCategory = await CategoryModel.findById(product.categoryId);
+         if (req.body.status == "Active" && (checkCategory.isDeleted || checkCategory.status == "Inactive" )) {
+            return next(new Error("can not active this product category not available", { cause: 400 }));
+        }
+        product.status = req.body.status;
+    }
+           
+    if (req.file) {
+        const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            folder: `${process.env.APP_NAME}/Products`
+        })
+        await cloudinary.uploader.destroy(product.mainImage.public_id);
+        product.mainImage = { secure_url, public_id };
+    }
+    
     const user = await UserModel.findById(req.user._id);
 
     const updatedByUser = {

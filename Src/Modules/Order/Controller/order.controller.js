@@ -7,6 +7,7 @@ import moment from 'moment';
 import { pagination } from "../../../Services/pagination.js";
 import OrderContactModel from "../../../../DB/model/orderContact.model.js";
 import PaymentMethodModel from "../../../../DB/model/paymentmethod.model.js";
+import { sendEmail } from "../../../Services/email.js";
 
 export const createOrder = async (req, res, next) => {
     const cart = await CartModel.findOne({ userId: req.user._id });
@@ -122,193 +123,229 @@ export const createOrder = async (req, res, next) => {
         const coupon = await CouponModel.findOne({ name: req.body.couponName.toLowerCase() });
         await CouponModel.updateOne({ _id: coupon._id }, { $addToSet: { usedBy: req.user._id } })
     }
+    if (order.paymentType=== 'visa') {
+        await sendEmail(user.email, "Order Made Successfully", ` 
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title></title>
+            <!--[if !mso]><!-- -->
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <!--<![endif]-->
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <style type="text/css">
+                #outlook a { padding: 0; }
+                .ReadMsgBody { width: 100%; }
+                .ExternalClass { width: 100%; }
+                .ExternalClass * { line-height: 100%; }
+                body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
+                table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+                p { display: block; margin: 13px 0; }
+            </style>
+            <!--[if !mso]><!-->
+            <style type="text/css">
+                @media only screen and (max-width:480px) {
+                    @-ms-viewport { width: 320px; }
+                    @viewport { width: 320px; }
+                }
+            </style>
+            <!--<![endif]-->
+            <!--[if mso]>
+            <xml>
+                <o:OfficeDocumentSettings>
+                    <o:AllowPNG/>
+                    <o:PixelsPerInch>96</o:PixelsPerInch>
+                </o:OfficeDocumentSettings>
+            </xml>
+            <![endif]-->
+            <!--[if lte mso 11]>
+            <style type="text/css">
+                .outlook-group-fix { width:100% !important; }
+            </style>
+            <![endif]-->
+            <!--[if !mso]><!-->
+            <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+            <style type="text/css">
+                @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+            </style>
+            <!--<![endif]-->
+            <style type="text/css">
+                @media only screen and (min-width:480px) {
+                    .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+                }
+            </style>
+        </head>
+        <body style="background-color: #fafafa; overflow: hidden;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
+                <tr>
+                    <td>
+                        <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                            <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                                <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                    <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                        <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                        <div style="text-align:start; margin-left: 100px;">
+                                                                                            <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${user.userName}</h2>
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Total Price: ₪${order.finalPrice}</h1>
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Made In : ${order.createdAt}</h1> 
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Total products:  ${order.products.length}</h1>
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Payment Type:  ${order.paymentType}</h1>
+                                                                                            <p style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Card Details: Card Number ${order.cardDetails.cardNumber} / expiry Date: ${order.cardDetails.expiryDate}/</p>
+                                                                                            <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">note: You have 3 Days to Cancel Order, then you can not cancel</h3>
+                                                                                            <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">Contact with us: we are going to send you contact information when your order is confirmed</h3>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div><!--[if mso | IE]>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    <![endif]-->
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        </table>
+        </body>
+        </html>    
+        `);
+        
+    } else {
+        await sendEmail(user.email, "Order Made Successfully", ` 
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title></title>
+            <!--[if !mso]><!-- -->
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <!--<![endif]-->
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <style type="text/css">
+                #outlook a { padding: 0; }
+                .ReadMsgBody { width: 100%; }
+                .ExternalClass { width: 100%; }
+                .ExternalClass * { line-height: 100%; }
+                body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
+                table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+                p { display: block; margin: 13px 0; }
+            </style>
+            <!--[if !mso]><!-->
+            <style type="text/css">
+                @media only screen and (max-width:480px) {
+                    @-ms-viewport { width: 320px; }
+                    @viewport { width: 320px; }
+                }
+            </style>
+            <!--<![endif]-->
+            <!--[if mso]>
+            <xml>
+                <o:OfficeDocumentSettings>
+                    <o:AllowPNG/>
+                    <o:PixelsPerInch>96</o:PixelsPerInch>
+                </o:OfficeDocumentSettings>
+            </xml>
+            <![endif]-->
+            <!--[if lte mso 11]>
+            <style type="text/css">
+                .outlook-group-fix { width:100% !important; }
+            </style>
+            <![endif]-->
+            <!--[if !mso]><!-->
+            <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+            <style type="text/css">
+                @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+            </style>
+            <!--<![endif]-->
+            <style type="text/css">
+                @media only screen and (min-width:480px) {
+                    .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+                }
+            </style>
+        </head>
+        <body style="background-color: #fafafa; overflow: hidden;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
+                <tr>
+                    <td>
+                        <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                            <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                                <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                    <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                        <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                        <div style="text-align:start; margin-left: 100px;">
+                                                                                            <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${user.userName}</h2>
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Total Price: ₪${order.finalPrice}</h1>
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Made In : ${order.createdAt}</h1> 
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Total products:  ${order.products.length}</h1>
+                                                                                            <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Payment Type:  ${order.paymentType}</h1>
+                                                                                            <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">note: You have 3 Days to Cancel Order, then you can not cancel</h3>
+                                                                                            <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">Contact with us: we are going to send you contact information when your order is confirmed</h3>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div><!--[if mso | IE]>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    <![endif]-->
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        </table>
+        </body>
+        </html>    
+        `);
+        
+    }
 
-
-    // await sendEmail(email, "Confirm Email", `
-    // <!DOCTYPE html>
-    // <html>
-    // <head>
-    //     <title></title>
-    //     <!--[if !mso]><!-- -->
-    //     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    //     <!--<![endif]-->
-    //     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    //     <style type="text/css">
-    //         #outlook a { padding: 0; }
-    //         .ReadMsgBody { width: 100%; }
-    //         .ExternalClass { width: 100%; }
-    //         .ExternalClass * { line-height: 100%; }
-    //         body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
-    //         table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-    //         img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
-    //         p { display: block; margin: 13px 0; }
-    //     </style>
-    //     <!--[if !mso]><!-->
-    //     <style type="text/css">
-    //         @media only screen and (max-width:480px) {
-    //             @-ms-viewport { width: 320px; }
-    //             @viewport { width: 320px; }
-    //         }
-    //     </style>
-    //     <!--<![endif]-->
-    //     <!--[if mso]>
-    //     <xml>
-    //         <o:OfficeDocumentSettings>
-    //             <o:AllowPNG/>
-    //             <o:PixelsPerInch>96</o:PixelsPerInch>
-    //         </o:OfficeDocumentSettings>
-    //     </xml>
-    //     <![endif]-->
-    //     <!--[if lte mso 11]>
-    //     <style type="text/css">
-    //         .outlook-group-fix { width:100% !important; }
-    //     </style>
-    //     <![endif]-->
-    //     <!--[if !mso]><!-->
-    //     <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
-    //     <style type="text/css">
-    //         @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
-    //     </style>
-    //     <!--<![endif]-->
-    //     <style type="text/css">
-    //         @media only screen and (min-width:480px) {
-    //             .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
-    //         }
-    //     </style>
-    // </head>
-    // <body style="background-color: #fafafa; overflow: hidden;">
-    //     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
-    //         <tr>
-    //             <td>
-    //                 <div style="margin:0px auto;max-width:640px;background:#fafafa;">
-    //                     <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
-    //                         <tbody>
-    //                             <tr>
-    //                                 <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
-    //                                     <div style="margin:0px auto;max-width:640px;background:#fafafa;">
-    //                                         <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
-    //                                             <tbody>
-    //                                                 <tr>
-    //                                                     <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
-    //                                                         <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
-    //                                                             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-    //                                                                 <tbody>
-    //                                                                     <tr>
-    //                                                                         <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
-    //                                                                             <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
-    //                                                                                 <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
-    //                                                                                 <div style="text-align:start;">
-    //                                                                                     <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${req.body.userName}</h2>
-    //                                                                                     <p>Welcome to Skin Elegance Shop! We're thrilled to have you join our community of skin care enthusiasts. To start exploring the best in skin care products, please verify your email address by clicking the link below.</p>
-    //                                                                                 </div>
-    //                                                                             </div>
-    //                                                                         </td>
-    //                                                                     </tr>
-
-    //                                                                 </tbody>
-    //                                                             </table>
-    //                                                             <table>
-    //                                                             <tbody>
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>Name</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order.firstName} {order.lastName}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>City/Address</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order?.city} / {order.address}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-
-
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>Status</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order.status}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               {order.status === "cancelled" ? <tr className="shipping-totals">
-    //                                                                 <th>Reason Canceled</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order.reasonRejected}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr> : ''}
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>Status</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order.status}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>Phone Number</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order.phoneNumber}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>Payment Type</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order.paymentType}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>Created Date</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination"><strong>{order.createdAt.split('T')[0]}</strong>.</p>
-    //                                                                   <p className="destination"><strong>{order.createdAt.split('T')[1]}</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               <tr className="cart-subtotal">
-    //                                                                 <th>Subtotal</th>
-    //                                                                 <td>
-    //                                                                   <span className="amount">₪{order ? order?.finalPrice?.toFixed(2) : ''}</span>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               <tr className="shipping-totals">
-    //                                                                 <th>Shipping</th>
-    //                                                                 <td>
-    //                                                                   <p className="destination">Shipping to <strong>Cities of Palestine is ₪30</strong>.</p>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               <tr className="order-total">
-    //                                                                 <th>Total</th>
-    //                                                                 <td>
-    //                                                                   <span className="amount">₪{order ? (order?.finalPrice + 30).toFixed(2) : ''}</span>
-    //                                                                 </td>
-    //                                                               </tr>
-    //                                                               {order.contact ? <tr className="order-total">
-    //                                                                 <th>Contact</th>
-    //                                                                 <td>
-    //                                                                   <span className="destination ">{order.contact.adminEmail}</span> /
-    //                                                                   <span className="destination ">{order.contact.adminPhoneNumber}</span>
-    //                                                                 </td>
-    //                                                               </tr> : ''}
-
-    //                                                             </tbody>
-    //                                                           </table>
-    //                                                         </div><!--[if mso | IE]>
-    //                                                         </td>
-    //                                                     </tr>
-    //                                                 </table>
-    //                                             <![endif]-->
-    //                                             </td>
-    //                                         </tr>
-    //                                     </tbody>
-    //                                 </table>
-    //                             </div>
-    //                         </td>
-    //                     </tr>
-    //                 </tbody>
-    //             </table>
-    //         </div>
-    //     </td>
-    // </tr>
-    // </table>
-    // </body>
-    // </html>
-    // `);
     return res.status(201).json({ message: 'success', order });
 }
 
@@ -332,7 +369,7 @@ export const getAllOrders = async (req, res, next) => {
                 { city: { $regex: req.query.search, $options: 'i' } },
                 { 'updatedByUser.userName': { $regex: req.query.search, $options: 'i' } },
                 { paymentType: { $regex: req.query.search, $options: 'i' } },
-            
+
             ]
         });
     }
@@ -341,13 +378,13 @@ export const getAllOrders = async (req, res, next) => {
     }
 
     const orders = await mongooseQuery.sort(req.query.sort?.replaceAll(',', ' '));
-    const deliveredOrder=await OrderModel.find({status:'delivered'}).count();
-    const onWayOrder=await OrderModel.find({status:'onWay'}).count();
-    const confirmedOrder=await OrderModel.find({status:'confirmed'}).count();
-    const cancelledOrder=await OrderModel.find({status:'cancelled'}).count();
-    const pendingOrder=await OrderModel.find({status:'pending'}).count();
+    const deliveredOrder = await OrderModel.find({ status: 'delivered' }).count();
+    const onWayOrder = await OrderModel.find({ status: 'onWay' }).count();
+    const confirmedOrder = await OrderModel.find({ status: 'confirmed' }).count();
+    const cancelledOrder = await OrderModel.find({ status: 'cancelled' }).count();
+    const pendingOrder = await OrderModel.find({ status: 'pending' }).count();
 
-    return res.status(201).json({ message: "success", orders,deliveredOrder:deliveredOrder,onWayOrder:onWayOrder,cancelledOrder:cancelledOrder,pendingOrder:pendingOrder,confirmedOrder:confirmedOrder });
+    return res.status(201).json({ message: "success", orders, deliveredOrder: deliveredOrder, onWayOrder: onWayOrder, cancelledOrder: cancelledOrder, pendingOrder: pendingOrder, confirmedOrder: confirmedOrder });
 }
 
 export const getMyOrders = async (req, res, next) => {
@@ -398,13 +435,13 @@ export const updateStatusOrder = async (req, res, next) => {
     }
 
     if (order.status == 'cancelled' || order.status == 'delivered') {
-        return next(new Error(` can not change status this order `, { cause: 400}));
+        return next(new Error(` can not change status this order `, { cause: 400 }));
     }
 
     if (order.status !== 'confirmed' && req.body.status == 'onWay') {
         return next(new Error(` can not change status its should be confirmed `, { cause: 400 }));
     }
-    if(!order.contact&&req.body.status == 'onWay'){
+    if (!order.contact && req.body.status == 'onWay') {
         return next(new Error(` can not change status you should add contact details to this Customer `, { cause: 400 }));
     }
 
@@ -419,13 +456,122 @@ export const updateStatusOrder = async (req, res, next) => {
         _id: user._id
     }
     const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
+    if (newOrder) {
+        const orderUser = await UserModel.findById(newOrder.userId);
+
+        await sendEmail(orderUser.email, `Order ${newOrder.status} Successfully`, `  <!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start; margin-left: 100px;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${orderUser.userName}</h2>
+                                                                                        <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Total Price: ₪${newOrder.finalPrice}</h1>
+                                                                                         <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Made In: ${newOrder.createdAt}</h1>
+                                                                                        <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Contact : Contact Email: ${order.contact.adminEmail}/ Contact Phone: ${order.contact.adminPhoneNumber}</h1>
+
+                                                                                        <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">note: if you have any questions Contact with Us</h3>
+                                                                                     </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
+    }
     return res.status(201).json({ message: "success", order: newOrder });
 }
 
 export const addContactsOrder = async (req, res, next) => {
     const orderId = req.params.orderId;
-    try {
-        const order = await OrderModel.findById(orderId);
+         const order = await OrderModel.findById(orderId);
         if (!order) {
             return next(new Error(`Order not found`, { cause: 404 }));
         }
@@ -452,12 +598,116 @@ export const addContactsOrder = async (req, res, next) => {
 
         // Save the updated order document
         await order.save();
+        const orderUser = await UserModel.findById(order.userId);
 
-        return res.status(201).json({ message: "Success", order });
-    } catch (error) {
-        return next(error);
-    }
-};
+        await sendEmail(orderUser.email, `Your Order Contact`, ` 
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start; margin-left: 100px;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${orderUser.userName}</h2>
+                                                                                        <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Total Price: ₪${order.finalPrice}</h1>
+                                                                                        <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Contact : Contact Email: ${order.contact.adminEmail}/ Contact Phone: ${order.contact.adminPhoneNumber}</h1>
+                                                                                        <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Made In: ${order.createdAt}</h1>
+                                                                                        <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">note: if you have any questions Contact with Us</h3>
+                                                                                     </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
+         return res.status(201).json({ message: "Success", order });
+ };
 
 
 export const cancelOrder = async (req, res, next) => {
@@ -501,6 +751,115 @@ export const cancelOrder = async (req, res, next) => {
     }
 
     const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
+    if (newOrder) {
+        const orderUser = await UserModel.findById(newOrder.userId);
+
+        await sendEmail(orderUser.email, `Your Order Canceled Successfully`, ` 
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start; margin-left: 100px;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${orderUser.userName}</h2>
+                                                                                         <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Made In : ${newOrder.createdAt}</h1>
+                                                                                         <p style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color:red ;letter-spacing: 0.27px;">note: ${newOrder.reasonRejected}</p>
+                                                                                         <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">note: if you used a coupon You can use it in the next order </h3>
+                                                                                     </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
+    }
     return res.status(200).json({ message: "Order canceled successfully", newOrder });
 }
 
@@ -540,5 +899,114 @@ export const confirmOrder = async (req, res, next) => {
         _id: user._id
     }
     const newOrder = await OrderModel.findByIdAndUpdate(orderId, req.body, { new: true });
+    if (newOrder) {
+        const orderUser = await UserModel.findById(newOrder.userId);
+
+        await sendEmail(orderUser.email, `Order ${newOrder.status} Successfully`, `  <!DOCTYPE html>
+    <html>
+    <head>
+        <title></title>
+        <!--[if !mso]><!-- -->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<![endif]-->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            #outlook a { padding: 0; }
+            .ReadMsgBody { width: 100%; }
+            .ExternalClass { width: 100%; }
+            .ExternalClass * { line-height: 100%; }
+            body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #fafafa; overflow: hidden; }
+            table, td { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+            img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+            p { display: block; margin: 13px 0; }
+        </style>
+        <!--[if !mso]><!-->
+        <style type="text/css">
+            @media only screen and (max-width:480px) {
+                @-ms-viewport { width: 320px; }
+                @viewport { width: 320px; }
+            }
+        </style>
+        <!--<![endif]-->
+        <!--[if mso]>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+        <![endif]-->
+        <!--[if lte mso 11]>
+        <style type="text/css">
+            .outlook-group-fix { width:100% !important; }
+        </style>
+        <![endif]-->
+        <!--[if !mso]><!-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700" rel="stylesheet" type="text/css">
+        <style type="text/css">
+            @import url(https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700);
+        </style>
+        <!--<![endif]-->
+        <style type="text/css">
+            @media only screen and (min-width:480px) {
+                .mj-column-per-100, *[aria-labelledby="mj-column-per-100"] { width: 100% !important; }
+            }
+        </style>
+    </head>
+    <body style="background-color: #fafafa; overflow: hidden;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center" style="overflow: hidden;">
+            <tr>
+                <td>
+                    <div style="margin:0px auto;max-width:640px;background:#fafafa; overflow: hidden;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 0px;">
+                                        <div style="margin:0px auto;max-width:640px;background:#fafafa;">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:0px;width:100%;background:#fafafa;" align="center" border="0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="text-align:center;vertical-align:top;direction:ltr;font-size:0px;padding:20px 40px;">
+                                                            <div aria-labelledby="mj-column-per-100" class="mj-column-per-100 outlook-group-fix" style="vertical-align:top;display:inline-block;direction:ltr;font-size:13px;text-align:left;width:100%;">
+                                                                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="word-break:break-word;font-size:0px;padding:0px 0px 10px;" align="left">
+                                                                                <div style="cursor:auto; font-family:Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px;line-height:22px;text-align:center;">
+                                                                                    <p><img src="https://res.cloudinary.com/dnkdk0ddu/image/upload/v1716562329/SkinElegance-Shop/nrjct9sjh2m4o1dtumg8.png" alt="Party Wumpus" title="None" width="250" style="height: auto;"></p>
+                                                                                    <div style="text-align:start; margin-left: 100px;">
+                                                                                        <h2 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Hi ${orderUser.userName}</h2>
+                                                                                        <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Total Price: ₪${newOrder.finalPrice}</h1>
+                                                                                         <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Payment Type: ${newOrder.paymentType}</h1> 
+                                                                                         <h1 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 18px;color: #4F545C;letter-spacing: 0.27px;">Made In: ${newOrder.createdAt}</h1> 
+                                                                                        <h3 style="font-family: Whitney, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-weight: 500;font-size: 14px;color:red ;letter-spacing: 0.27px;">note: You Can not cancel this order anymore</h3>
+                                                                                     </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div><!--[if mso | IE]>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                <![endif]-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    </table>
+    </body>
+    </html>    
+    `);
+    }
     return res.status(200).json({ message: "Order Confirmed successfully", newOrder });
 }
