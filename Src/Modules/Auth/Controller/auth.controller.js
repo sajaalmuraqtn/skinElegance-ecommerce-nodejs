@@ -579,12 +579,10 @@ export const forgotPassword = async (req, res,next) => {
 export const adminSignIn = async (req, res,next) => {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email: email });
-    if (user.role!='Admin') {
-        return next(new Error("invalid authorization", { cause: 400 }));
-    }
-    if (!user) {
+    if (!user || user.role!='Admin') {
         return next(new Error("data invalid",{cause:400}));  
     }
+ 
     if (!user.confirmEmail) {
         return next(new Error("please confirm your email!!!",{cause:400}));  
     }
@@ -704,8 +702,8 @@ export const adminSignIn = async (req, res,next) => {
 export const signIn = async (req, res,next) => {
     const { email, password } = req.body;
     const user = await UserModel.findOne({ email: email });
-    
-    if (!user) {
+ 
+    if (!user || user.role!='User') {
         return next(new Error("data invalid",{cause:400}));  
     }
     if (!user.confirmEmail) {

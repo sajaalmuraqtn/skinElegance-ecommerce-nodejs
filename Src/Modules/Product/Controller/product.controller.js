@@ -291,7 +291,7 @@ export const updateProduct = async (req, res, next) => {
 
     if (req.body.price) {
         product.price = req.body.price;
-        product.finalPrice = (req.body.price - (req.body.price * (discount || 0) / 100)).toFixed(2);
+        product.finalPrice = (req.body.price - (req.body.price * (product.discount || 0) / 100)).toFixed(2);
         product.finalPrice = (req.body.price - (req.body.price * (product.discount || 0) / 100)).toFixed(2);
     }
 
